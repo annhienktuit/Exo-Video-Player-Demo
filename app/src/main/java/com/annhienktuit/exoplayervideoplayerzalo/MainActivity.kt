@@ -1,5 +1,6 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
+import android.media.session.PlaybackState
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -16,6 +17,7 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultAllocator
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.Util
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var loadControl:LoadControl
     private var trackSelector:DefaultTrackSelector = DefaultTrackSelector()
-    private var trackParams:DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().build()
+    private var trackParams:DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().setMaxVideoSize(1920,1080).build()
     private lateinit var mediaDataSourceFactory: DataSource.Factory
     private lateinit var mediaSourceFactory:MediaSourceFactory
     private lateinit var mediaSourceHighRes: ProgressiveMediaSource
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnHighRes:Button
     private lateinit var btnLowRes:Button
     private lateinit var tvResolution:TextView
+    private lateinit var tvMetadata: TextView
     private var playWhenReady = false
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -46,7 +49,6 @@ class MainActivity : AppCompatActivity() {
                 playWhenReady = false
                 playbackPosition = this.currentPosition
                 currentWindow = this.currentWindowIndex
-                println("$playbackPosition $currentWindow")
                 setMediaSource(mediaSourceHighRes)
                 seekTo(currentWindow, playbackPosition)
                 playWhenReady = true
@@ -58,22 +60,13 @@ class MainActivity : AppCompatActivity() {
                 playWhenReady = false
                 playbackPosition = this.currentPosition
                 currentWindow = this.currentWindowIndex
-                println("$playbackPosition $currentWindow")
                 setMediaSource(mediaSourceLowRes)
                 seekTo(currentWindow, playbackPosition)
                 playWhenReady = true
             }
             tvResolution.text = "Low resolution"
         }
-    }
-
-    private fun hideSystemUi() {
-        //Handle fullscreen
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, player_view).let { controller ->
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+        exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
     }
 
     private fun initializePlayer() {
@@ -102,8 +95,8 @@ class MainActivity : AppCompatActivity() {
         mediaSourceHighRes = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemHigh)
         mediaSourceLowRes = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemLow)
         mediaSourceFactory = DefaultMediaSourceFactory(mediaDataSourceFactory)
-
     }
+
 
     private fun initializeLoadControl(){
         DefaultLoadControl.Builder()
@@ -129,7 +122,18 @@ class MainActivity : AppCompatActivity() {
         btnHighRes = findViewById(R.id.btnHighRes)
         btnLowRes = findViewById(R.id.btnLowRes)
         tvResolution = findViewById(R.id.tvRes)
+        tvMetadata = findViewById(R.id.tvMetaData)
     }
+
+    private fun hideSystemUi() {
+        //Handle fullscreen
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, player_view).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
     //Handle lifecycle
     public override fun onStart() {
         super.onStart()
@@ -153,13 +157,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     public override fun onStop() {
         super.onStop()
         if (Util.SDK_INT >= 24) {
             releasePlayer()
         }
     }
-
 
 }

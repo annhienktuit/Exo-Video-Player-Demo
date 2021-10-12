@@ -4,29 +4,13 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#99000000"
+    android:background="@color/transparent"
     android:visibility="visible"
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_header_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="5dp"
-        android:paddingTop="30dp"
-        app:layout_constraintEnd_toStartOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_left"
@@ -74,14 +58,12 @@
     <ImageButton
         android:id="@+id/exo_pause"
         style="@style/ExoMediaButton.Pause"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/ic_exo_icon_pause"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <LinearLayout
         android:id="@+id/videoTimeContainer"
@@ -101,7 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:minWidth="50dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/exo_progress"
             app:layout_constraintStart_toStartOf="parent"
@@ -119,43 +101,23 @@
             android:layout_marginRight="7dp"
             android:layout_weight="1"
             app:played_color="#ab000d"
-            app:scrubber_color="#ab000d" />
+            app:scrubber_color="#ab000d"
+            app:buffered_color="#b0bec5"
+            app:unplayed_color="@color/white"/>
 
         <TextView
             android:id="@id/exo_duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:gravity="right"
+            android:gravity="center"
             android:minWidth="50dp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/exo_progress"
             app:layout_constraintStart_toEndOf="@+id/exo_progress"
             app:layout_constraintTop_toTopOf="@+id/exo_progress"
             tool:text="00:00" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/exo_go_live"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_round_rect_white_50"
-            android:gravity="center"
-            android:minWidth="50dp"
-            android:minHeight="25dp"
-            android:minEms="4"
-            android:paddingLeft="15dp"
-            android:paddingTop="6dp"
-            android:paddingRight="15dp"
-            android:paddingBottom="6dp"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/exo_progress"
-            app:layout_constraintStart_toEndOf="@+id/exo_progress"
-            app:layout_constraintTop_toTopOf="@+id/exo_progress"
-            tool:text="dssdd" />
 
     </LinearLayout>
 
