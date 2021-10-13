@@ -66,6 +66,53 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/timingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/videoTimeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@id/exo_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:minWidth="40dp"
+            android:textColor="@color/zmpurple"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/exo_progress"
+            tool:text="00:00" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/"
+            android:textColor="@color/zmpurple"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@id/exo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:minWidth="50dp"
+            android:textColor="@color/zmpurple"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@id/exo_progress"
+            app:layout_constraintStart_toEndOf="@+id/exo_progress"
+            app:layout_constraintTop_toTopOf="@+id/exo_progress"
+            tool:text="00:00" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
         android:id="@+id/videoTimeContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -77,47 +124,36 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@id/exo_position"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:minWidth="50dp"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@id/exo_progress"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/exo_progress"
-            tool:text="00:00" />
-
         <com.google.android.exoplayer2.ui.DefaultTimeBar
             android:id="@+id/exo_progress"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="7dp"
             android:layout_marginLeft="7dp"
             android:layout_marginEnd="7dp"
             android:layout_marginRight="7dp"
             android:layout_weight="1"
-            app:played_color="#ab000d"
-            app:scrubber_color="#ab000d"
+            app:played_color="@color/zmpurple"
+            app:scrubber_color="@color/zmpurple"
             app:buffered_color="#b0bec5"
             app:unplayed_color="@color/white"/>
 
-        <TextView
-            android:id="@id/exo_duration"
+        <FrameLayout
+            android:id="@+id/exo_fullscreen_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:gravity="center"
-            android:minWidth="50dp"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@id/exo_progress"
-            app:layout_constraintStart_toEndOf="@+id/exo_progress"
-            app:layout_constraintTop_toTopOf="@+id/exo_progress"
-            tool:text="00:00" />
+            android:layout_gravity="right">
+
+            <Button
+                android:id="@+id/exo_quality_icon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:background="@drawable/ic_hd" />
+        </FrameLayout>
 
     </LinearLayout>
 

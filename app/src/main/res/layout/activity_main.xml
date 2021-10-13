@@ -10,23 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <Button
-            android:id="@+id/btnLowRes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:text="Low Res"
-            android:textColor="@color/zmpurple"
-            style="?attr/materialButtonOutlinedStyle"/>
-        <Button
-            android:id="@+id/btnHighRes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="40dp"
-            android:layout_alignParentRight="true"
-            android:text="High Res"
-            android:textColor="@color/zmpurple"
-            style="?attr/materialButtonOutlinedStyle"/>
     </RelativeLayout>
     <TextView
         android:id="@+id/tvRes"
@@ -49,7 +32,6 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/tvRes"
         app:show_buffering="when_playing"
-        app:show_shuffle_button="true"
-        app:show_timeout="5000"/>
+        app:show_shuffle_button="true" />
 
 </RelativeLayout>

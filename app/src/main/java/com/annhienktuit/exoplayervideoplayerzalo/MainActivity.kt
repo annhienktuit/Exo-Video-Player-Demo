@@ -1,8 +1,8 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
-import android.media.session.PlaybackState
 import android.os.Bundle
 import android.widget.Button
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -30,10 +30,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaSourceFactory:MediaSourceFactory
     private lateinit var mediaSourceHighRes: ProgressiveMediaSource
     private lateinit var mediaSourceLowRes: ProgressiveMediaSource
-    private lateinit var btnHighRes:Button
-    private lateinit var btnLowRes:Button
     private lateinit var tvResolution:TextView
     private lateinit var tvMetadata: TextView
+    private lateinit var tvPosition:TextView
+    private lateinit var btnQuality:Button
     private var playWhenReady = false
     private var currentWindow = 0
     private var playbackPosition = 0L
@@ -44,27 +44,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         bindView()
         initializePlayer()
-        btnHighRes.setOnClickListener {
-            exoPlayer.apply {
-                playWhenReady = false
-                playbackPosition = this.currentPosition
-                currentWindow = this.currentWindowIndex
-                setMediaSource(mediaSourceHighRes)
-                seekTo(currentWindow, playbackPosition)
-                playWhenReady = true
+        tvPosition.text = "00:00"
+        btnQuality.setOnClickListener {
+            val popupMenu = PopupMenu(this, btnQuality)
+            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when(item.itemId){
+                    R.id.action_highres -> switchHighRes()
+
+                    else -> switchLowRes()
+                }
+                true
             }
-            tvResolution.text = "High resolution"
-        }
-        btnLowRes.setOnClickListener {
-            exoPlayer.apply {
-                playWhenReady = false
-                playbackPosition = this.currentPosition
-                currentWindow = this.currentWindowIndex
-                setMediaSource(mediaSourceLowRes)
-                seekTo(currentWindow, playbackPosition)
-                playWhenReady = true
-            }
-            tvResolution.text = "Low resolution"
+            popupMenu.show()
         }
         exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
     }
@@ -119,10 +111,34 @@ class MainActivity : AppCompatActivity() {
 
     private fun bindView() {
         player_view = findViewById(R.id.player_view)
-        btnHighRes = findViewById(R.id.btnHighRes)
-        btnLowRes = findViewById(R.id.btnLowRes)
         tvResolution = findViewById(R.id.tvRes)
         tvMetadata = findViewById(R.id.tvMetaData)
+        tvPosition = findViewById(R.id.exo_position)
+        btnQuality = findViewById(R.id.exo_quality_icon)
+    }
+
+    fun switchHighRes(){
+        exoPlayer.apply {
+            playWhenReady = false
+            playbackPosition = this.currentPosition
+            currentWindow = this.currentWindowIndex
+            setMediaSource(mediaSourceHighRes)
+            seekTo(currentWindow, playbackPosition)
+            playWhenReady = true
+        }
+        tvResolution.text = "High resolution"
+    }
+
+    fun switchLowRes(){
+        exoPlayer.apply {
+            playWhenReady = false
+            playbackPosition = this.currentPosition
+            currentWindow = this.currentWindowIndex
+            setMediaSource(mediaSourceLowRes)
+            seekTo(currentWindow, playbackPosition)
+            playWhenReady = true
+        }
+        tvResolution.text = "Low resolution"
     }
 
     private fun hideSystemUi() {
