@@ -147,17 +147,17 @@
             <Button
                 android:id="@+id/exo_quality_icon"
                 android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:background="@drawable/ic_hd" />
+                android:background="@drawable/ic_hd"
+                android:scaleType="fitCenter" />
 
             <Button
                 android:id="@+id/exo_fullscreen_icon"
-                android:layout_width="32dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="2dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="5dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/ic_fullscreen_expand"
                 android:gravity="center"

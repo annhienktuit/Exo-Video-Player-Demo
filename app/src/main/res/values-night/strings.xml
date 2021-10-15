@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="video_mp4_low">https://sample-videos.com/video123/mp4/240/big_buck_bunny_240p_1mb.mp4</string>
+    <string name="app_name">Exo Player Video Player Zalo</string>
+    <string name="video_mp4_low">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4</string>
+    <string name="video_mp4_high">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4</string>
     <string name="music_mp3">https://data.chiasenhac.com/down2/2171/1/2170740-9d48456b/128/We%20Are%20The%20People%20-%20Martin%20Garrix_%20Bono.mp3</string>
 </resources>

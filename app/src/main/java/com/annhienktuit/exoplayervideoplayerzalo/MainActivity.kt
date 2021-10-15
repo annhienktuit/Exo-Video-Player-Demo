@@ -2,9 +2,8 @@ package com.annhienktuit.exoplayervideoplayerzalo
 
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.widget.Button
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaSourceHighRes: ProgressiveMediaSource
     private lateinit var mediaSourceLowRes: ProgressiveMediaSource
     private lateinit var tvResolution:TextView
-    private lateinit var tvMetadata: TextView
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
     private lateinit var btnFullScr:Button
@@ -65,10 +63,14 @@ class MainActivity : AppCompatActivity() {
             if(isLandscapeOrientation()){
                 player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                tvResolution.visibility = View.VISIBLE
+                btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
             }
             else {
                 player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                tvResolution.visibility = View.INVISIBLE
+                btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
             }
 
         }
@@ -126,13 +128,12 @@ class MainActivity : AppCompatActivity() {
     private fun bindView() {
         player_view = findViewById(R.id.player_view)
         tvResolution = findViewById(R.id.tvRes)
-        tvMetadata = findViewById(R.id.tvMetaData)
         tvPosition = findViewById(R.id.exo_position)
         btnQuality = findViewById(R.id.exo_quality_icon)
         btnFullScr = findViewById(R.id.exo_fullscreen_icon)
     }
 
-    fun switchHighRes(){
+    private fun switchHighRes(){
         exoPlayer.apply {
             playWhenReady = false
             playbackPosition = this.currentPosition
@@ -144,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         tvResolution.text = "High resolution"
     }
 
-    fun switchLowRes(){
+    private fun switchLowRes(){
         exoPlayer.apply {
             playWhenReady = false
             playbackPosition = this.currentPosition
