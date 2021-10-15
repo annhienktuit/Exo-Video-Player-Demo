@@ -1,5 +1,6 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.widget.Button
 import android.widget.PopupMenu
@@ -8,11 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.annhienktuit.exoplayervideoplayerzalo.Extensions.isLandscapeOrientation
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultAllocator
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvMetadata: TextView
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
-    private var playWhenReady = false
+    private lateinit var btnFullScr:Button
     private var currentWindow = 0
     private var playbackPosition = 0L
     private lateinit var mediaItemHigh:MediaItem
@@ -57,6 +60,17 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             popupMenu.show()
+        }
+        btnFullScr.setOnClickListener {
+            if(isLandscapeOrientation()){
+                player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            }
+            else {
+                player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            }
+
         }
         exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
     }
@@ -115,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         tvMetadata = findViewById(R.id.tvMetaData)
         tvPosition = findViewById(R.id.exo_position)
         btnQuality = findViewById(R.id.exo_quality_icon)
+        btnFullScr = findViewById(R.id.exo_fullscreen_icon)
     }
 
     fun switchHighRes(){

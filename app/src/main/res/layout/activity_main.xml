@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/llResolution"
+        android:layout_marginTop="10dp"
         android:text="Low Resolution"
         android:textColor="@color/zmpurple"/>
     <TextView

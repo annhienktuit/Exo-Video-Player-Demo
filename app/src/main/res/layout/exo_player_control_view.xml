@@ -131,15 +131,15 @@
             android:layout_gravity="center"
             android:layout_marginLeft="7dp"
             android:layout_marginEnd="7dp"
-            android:layout_marginRight="7dp"
+            android:layout_marginRight="2dp"
             android:layout_weight="1"
             app:played_color="@color/zmpurple"
             app:scrubber_color="@color/zmpurple"
             app:buffered_color="#b0bec5"
             app:unplayed_color="@color/white"/>
 
-        <FrameLayout
-            android:id="@+id/exo_fullscreen_button"
+        <LinearLayout
+            android:id="@+id/exo_config_ll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right">
@@ -149,11 +149,21 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="center"
-                android:padding="10dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:background="@drawable/ic_hd" />
-        </FrameLayout>
+
+            <Button
+                android:id="@+id/exo_fullscreen_icon"
+                android:layout_width="32dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="2dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/ic_fullscreen_expand"
+                android:gravity="center"
+                android:padding="10dp"
+                android:scaleType="fitCenter" />
+        </LinearLayout>
 
     </LinearLayout>
 
