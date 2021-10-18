@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion "30.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.annhienktuit.exoplayervideoplayerzalo"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -45,4 +45,5 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-core:2.15.1'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.15.1'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.15.1'
+    implementation 'com.nbsp:materialfilepicker:1.9.1'
 }

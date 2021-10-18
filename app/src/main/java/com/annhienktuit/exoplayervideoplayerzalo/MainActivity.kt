@@ -1,14 +1,20 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.Button
+import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
@@ -23,7 +29,9 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.Util
 
+
 class MainActivity : AppCompatActivity() {
+    val OPEN_REQUEST_CODE = 1
     private lateinit var player_view:PlayerView
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var loadControl:LoadControl
@@ -38,9 +46,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnQuality:Button
     private lateinit var btnFullScr:Button
     private lateinit var btnMute:Button
+    private lateinit var btnFilePicker:Button
     private var currentWindow = 0
     private var playbackPosition = 0L
     private var currentVolume = 0F
+    private var uriMedia:String? = ""
     private lateinit var mediaItemHigh:MediaItem
     private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,19 +72,7 @@ class MainActivity : AppCompatActivity() {
             popupMenu.show()
         }
         btnFullScr.setOnClickListener {
-            if(isLandscapeOrientation()){
-                player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-                tvResolution.visibility = View.VISIBLE
-                btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
-            }
-            else {
-                player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-                tvResolution.visibility = View.INVISIBLE
-                btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
-            }
-
+            rotateScreen()
         }
         btnMute.setOnClickListener {
             currentVolume = exoPlayer?.volume
@@ -87,7 +85,21 @@ class MainActivity : AppCompatActivity() {
                 btnMute.setBackgroundResource(R.drawable.ic_unmute)
             }
         }
+        btnFilePicker.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+            intent.setType("video/*")
+            startActivityForResult(intent, OPEN_REQUEST_CODE)
+        }
         exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode === RESULT_OK && requestCode === OPEN_REQUEST_CODE) {
+            val uri: Uri? = data?.getData()
+            uriMedia = getRealPathFromURI(uri)
+        }
+        switchLocalFile()
     }
 
     private fun initializePlayer() {
@@ -145,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         btnQuality = findViewById(R.id.exo_quality_icon)
         btnFullScr = findViewById(R.id.exo_fullscreen_icon)
         btnMute = findViewById(R.id.exo_mute)
+        btnFilePicker = findViewById(R.id.exo_file_picker)
     }
 
     private fun switchHighRes(){
@@ -171,6 +184,17 @@ class MainActivity : AppCompatActivity() {
         tvResolution.text = "Low resolution"
     }
 
+    private fun switchLocalFile(){
+        if(uriMedia != null){
+            exoPlayer.playWhenReady = false
+            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
+            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
+            exoPlayer.setMediaSource(newMediaSource)
+            exoPlayer.playWhenReady = true
+            Log.i("picker: ",uriMedia.toString())
+        }
+    }
+
     private fun hideSystemUi() {
         //Handle fullscreen
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -178,6 +202,22 @@ class MainActivity : AppCompatActivity() {
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
+    }
+
+    private fun rotateScreen(){
+        if(isLandscapeOrientation()){
+            player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            tvResolution.visibility = View.VISIBLE
+            btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
+        }
+        else {
+            player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+            tvResolution.visibility = View.INVISIBLE
+            btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
+        }
+
     }
 
     //Handle lifecycle

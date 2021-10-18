@@ -23,6 +23,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/exo_file_picker"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginRight="36dp"
+        android:background="@drawable/ic_folder"
+        app:layout_constraintEnd_toEndOf="@id/exo_mute"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/barrier_left"
         android:layout_width="wrap_content"
