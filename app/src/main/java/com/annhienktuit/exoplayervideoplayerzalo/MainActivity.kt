@@ -217,7 +217,6 @@ class MainActivity : AppCompatActivity() {
             tvResolution.visibility = View.INVISIBLE
             btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
         }
-
     }
 
     //Handle lifecycle
