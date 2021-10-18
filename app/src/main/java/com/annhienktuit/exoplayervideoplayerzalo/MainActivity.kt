@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private var currentWindow = 0
     private var playbackPosition = 0L
     private var currentVolume = 0F
-    private var uriMedia:String? = ""
     private lateinit var mediaItemHigh:MediaItem
     private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -97,9 +96,10 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode === RESULT_OK && requestCode === OPEN_REQUEST_CODE) {
             val uri: Uri? = data?.getData()
-            uriMedia = getRealPathFromURI(uri)
+            val uriMedia = getRealPathFromURI(uri)
+            switchLocalFile(uriMedia)
         }
-        switchLocalFile()
+
     }
 
     private fun initializePlayer() {
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
             .build().apply {
-            addMediaSource(mediaSourceLowRes)
+            addMediaSource(mediaSourceHighRes)
             addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
             playWhenReady = this.playWhenReady
             seekTo(currentWindow, playbackPosition)
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         tvResolution.text = "Low resolution"
     }
 
-    private fun switchLocalFile(){
+    private fun switchLocalFile(uriMedia:String?){
         if(uriMedia != null){
             exoPlayer.playWhenReady = false
             val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onStart() {
         super.onStart()
         if (Util.SDK_INT >= 24) {
-            println("$currentWindow $playbackPosition")
+            Log.i("lifecycle: ","onStart")
             initializePlayer()
         }
     }
@@ -232,12 +232,14 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         hideSystemUi()
         if ((Util.SDK_INT < 24)) {
+            Log.i("lifecycle: ","onResume")
             initializePlayer()
         }
     }
     public override fun onPause() {
         super.onPause()
         if (Util.SDK_INT < 24) {
+            Log.i("lifecycle: ","onPause")
             releasePlayer()
         }
     }
@@ -245,6 +247,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onStop() {
         super.onStop()
         if (Util.SDK_INT >= 24) {
+            Log.i("lifecycle: ","onStop")
             releasePlayer()
         }
     }

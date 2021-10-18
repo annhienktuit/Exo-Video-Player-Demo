@@ -18,7 +18,7 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginTop="36dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="36dp"
         android:background="@drawable/ic_mute"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -188,6 +188,7 @@
                 android:layout_width="36dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
+                android:layout_marginRight="10dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/ic_hd"
                 android:scaleType="fitCenter" />
@@ -197,6 +198,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginEnd="12dp"
                 android:adjustViewBounds="true"
                 android:background="@drawable/ic_fullscreen_expand"
                 android:gravity="center"
