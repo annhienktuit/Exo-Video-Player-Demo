@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo
+package com.annhienktuit.exoplayervideoplayerzalo.utils
 
 import android.app.Activity
 import android.content.res.Configuration

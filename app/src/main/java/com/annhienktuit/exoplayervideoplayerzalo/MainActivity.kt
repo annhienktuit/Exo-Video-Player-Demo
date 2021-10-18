@@ -1,6 +1,7 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
 import android.content.pm.ActivityInfo
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -8,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.annhienktuit.exoplayervideoplayerzalo.Extensions.isLandscapeOrientation
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
@@ -36,8 +37,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
     private lateinit var btnFullScr:Button
+    private lateinit var btnMute:Button
     private var currentWindow = 0
     private var playbackPosition = 0L
+    private var currentVolume = 0F
     private lateinit var mediaItemHigh:MediaItem
     private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +55,6 @@ class MainActivity : AppCompatActivity() {
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId){
                     R.id.action_highres -> switchHighRes()
-
                     else -> switchLowRes()
                 }
                 true
@@ -74,6 +76,17 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
+        btnMute.setOnClickListener {
+            currentVolume = exoPlayer?.volume
+            if (currentVolume == 0f) {
+                exoPlayer.volume = 1f
+                btnMute.setBackgroundResource(R.drawable.ic_mute)
+            }
+            else {
+                exoPlayer.volume = 0f
+                btnMute.setBackgroundResource(R.drawable.ic_unmute)
+            }
+        }
         exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
     }
 
@@ -85,9 +98,9 @@ class MainActivity : AppCompatActivity() {
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
-            .build()
-        exoPlayer.apply {
+            .build().apply {
             addMediaSource(mediaSourceLowRes)
+            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
             playWhenReady = this.playWhenReady
             seekTo(currentWindow, playbackPosition)
             prepare()
@@ -131,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         tvPosition = findViewById(R.id.exo_position)
         btnQuality = findViewById(R.id.exo_quality_icon)
         btnFullScr = findViewById(R.id.exo_fullscreen_icon)
+        btnMute = findViewById(R.id.exo_mute)
     }
 
     private fun switchHighRes(){
