@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private var playbackPosition = 0L
     private var currentVolume = 0F
     private var isLocal:Boolean = false
+    private var uriMedia:String? = ""
     private lateinit var mediaItemHigh:MediaItem
     private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode === RESULT_OK && requestCode === OPEN_REQUEST_CODE) {
             val uri: Uri? = data?.getData()
-            val uriMedia = getRealPathFromURI(uri)
+            uriMedia = getRealPathFromURI(uri)
             switchLocalFile(uriMedia)
         }
     }
@@ -229,6 +230,8 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 isLocal = false
+                switchLocalFile(uriMedia)
+                exoPlayer.seekTo(currentWindow, playbackPosition)
             }
         }
     }
