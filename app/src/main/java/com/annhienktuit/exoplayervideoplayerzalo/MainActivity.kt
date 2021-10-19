@@ -241,7 +241,14 @@ class MainActivity : AppCompatActivity() {
         hideSystemUi()
         if ((Util.SDK_INT < 24)) {
             Log.i("lifecycle: ","onResume")
-            initializePlayer()
+            if(!isLocal){
+                initializePlayer()
+            }
+            else {
+                isLocal = false
+                switchLocalFile(uriMedia)
+                exoPlayer.seekTo(currentWindow, playbackPosition)
+            }
         }
     }
     public override fun onPause() {
