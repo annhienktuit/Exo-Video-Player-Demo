@@ -31,7 +31,6 @@ import com.google.android.exoplayer2.util.Util
 
 
 class MainActivity : AppCompatActivity() {
-    val OPEN_REQUEST_CODE = 1
     private lateinit var player_view:PlayerView
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var loadControl:LoadControl
@@ -50,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var currentWindow = 0
     private var playbackPosition = 0L
     private var currentVolume = 0F
+    private var isLocal:Boolean = false
     private lateinit var mediaItemHigh:MediaItem
     private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,9 +70,7 @@ class MainActivity : AppCompatActivity() {
             }
             popupMenu.show()
         }
-        btnFullScr.setOnClickListener {
-            rotateScreen()
-        }
+        btnFullScr.setOnClickListener { rotateScreen() }
         btnMute.setOnClickListener {
             currentVolume = exoPlayer?.volume
             if (currentVolume == 0f) {
@@ -99,7 +97,18 @@ class MainActivity : AppCompatActivity() {
             val uriMedia = getRealPathFromURI(uri)
             switchLocalFile(uriMedia)
         }
+    }
 
+    private fun switchLocalFile(uriMedia:String?){
+        if(uriMedia != null){
+            initializePlayer()
+            exoPlayer.playWhenReady = false
+            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
+            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
+            exoPlayer.setMediaSource(newMediaSource)
+            exoPlayer.playWhenReady = true
+            isLocal = true
+        }
     }
 
     private fun initializePlayer() {
@@ -111,11 +120,12 @@ class MainActivity : AppCompatActivity() {
             .setLoadControl(loadControl)
             .setMediaSourceFactory(mediaSourceFactory)
             .build().apply {
-            addMediaSource(mediaSourceHighRes)
-            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-            playWhenReady = this.playWhenReady
-            seekTo(currentWindow, playbackPosition)
-            prepare()
+                addMediaSource(mediaSourceHighRes)
+                addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
+                playWhenReady = this.playWhenReady
+                seekTo(currentWindow, playbackPosition)
+                prepare()
+                isLocal = false
         }
         player_view.requestFocus()
         player_view.player = exoPlayer
@@ -129,7 +139,6 @@ class MainActivity : AppCompatActivity() {
         mediaSourceLowRes = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemLow)
         mediaSourceFactory = DefaultMediaSourceFactory(mediaDataSourceFactory)
     }
-
 
     private fun initializeLoadControl(){
         DefaultLoadControl.Builder()
@@ -166,6 +175,7 @@ class MainActivity : AppCompatActivity() {
             playbackPosition = this.currentPosition
             currentWindow = this.currentWindowIndex
             setMediaSource(mediaSourceHighRes)
+            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
             seekTo(currentWindow, playbackPosition)
             playWhenReady = true
         }
@@ -178,21 +188,11 @@ class MainActivity : AppCompatActivity() {
             playbackPosition = this.currentPosition
             currentWindow = this.currentWindowIndex
             setMediaSource(mediaSourceLowRes)
+            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
             seekTo(currentWindow, playbackPosition)
             playWhenReady = true
         }
         tvResolution.text = "Low resolution"
-    }
-
-    private fun switchLocalFile(uriMedia:String?){
-        if(uriMedia != null){
-            exoPlayer.playWhenReady = false
-            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
-            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
-            exoPlayer.setMediaSource(newMediaSource)
-            exoPlayer.playWhenReady = true
-            Log.i("picker: ",uriMedia.toString())
-        }
     }
 
     private fun hideSystemUi() {
@@ -224,7 +224,12 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         if (Util.SDK_INT >= 24) {
             Log.i("lifecycle: ","onStart")
-            initializePlayer()
+            if(!isLocal){
+                initializePlayer()
+            }
+            else {
+                isLocal = false
+            }
         }
     }
 
@@ -250,6 +255,10 @@ class MainActivity : AppCompatActivity() {
             Log.i("lifecycle: ","onStop")
             releasePlayer()
         }
+    }
+
+    companion object {
+        const val OPEN_REQUEST_CODE = 1
     }
 
 }
