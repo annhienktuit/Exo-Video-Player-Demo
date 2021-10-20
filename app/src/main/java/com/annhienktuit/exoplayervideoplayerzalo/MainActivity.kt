@@ -2,13 +2,16 @@ package com.annhienktuit.exoplayervideoplayerzalo
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupMenu
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -46,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnFullScr:Button
     private lateinit var btnMute:Button
     private lateinit var btnFilePicker:Button
+    private lateinit var rlRes:RelativeLayout
     private var currentWindow = 0
     private var playbackPosition = 0L
     private var currentVolume = 0F
@@ -85,10 +89,9 @@ class MainActivity : AppCompatActivity() {
         }
         btnFilePicker.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-            intent.setType("video/*")
+            intent.setDataAndType(Uri.parse("/storage/emulated/0/"),"video/*")
             startActivityForResult(intent, OPEN_REQUEST_CODE)
         }
-        exoPlayer.addAnalyticsListener(EventLogger(trackSelector))
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -97,6 +100,19 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri? = data?.getData()
             uriMedia = getRealPathFromURI(uri)
             switchLocalFile(uriMedia)
+            Log.i("picker:","$uriMedia")
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            tvResolution.visibility = View.GONE
+            rlRes.visibility = View.GONE
+        }
+        else {
+            tvResolution.visibility = View.VISIBLE
+            rlRes.visibility = View.VISIBLE
         }
     }
 
@@ -168,6 +184,7 @@ class MainActivity : AppCompatActivity() {
         btnFullScr = findViewById(R.id.exo_fullscreen_icon)
         btnMute = findViewById(R.id.exo_mute)
         btnFilePicker = findViewById(R.id.exo_file_picker)
+        rlRes = findViewById(R.id.rlRes)
     }
 
     private fun switchHighRes(){
@@ -210,13 +227,16 @@ class MainActivity : AppCompatActivity() {
             player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
             tvResolution.visibility = View.VISIBLE
+            rlRes.visibility = View.VISIBLE
             btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
         }
         else {
             player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-            tvResolution.visibility = View.INVISIBLE
+            tvResolution.visibility = View.GONE
+            rlRes.visibility = View.GONE
             btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
+            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
