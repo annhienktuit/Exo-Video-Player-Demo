@@ -1,5 +1,4 @@
 package com.annhienktuit.exoplayervideoplayerzalo
-
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -17,32 +16,35 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Cache
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultAllocator
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.EventLogger
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
+import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 
-
 class MainActivity : AppCompatActivity() {
-    private lateinit var player_view:PlayerView
+    private lateinit var playerView:PlayerView
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var loadControl:LoadControl
     private var trackSelector:DefaultTrackSelector = DefaultTrackSelector()
     private var trackParams:DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().setMaxVideoSize(1920,1080).build()
     private lateinit var mediaDataSourceFactory: DataSource.Factory
-    private lateinit var mediaSourceFactory:MediaSourceFactory
+    private lateinit var cacheDataSourceFactory: DataSource.Factory
+    private lateinit var httpDataSourceFactory: HttpDataSource.Factory
     private lateinit var mediaSourceHighRes: ProgressiveMediaSource
     private lateinit var mediaSourceLowRes: ProgressiveMediaSource
+    private val simpleCache:SimpleCache = Cache.simpleCache
     private lateinit var tvResolution:TextView
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
@@ -77,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         }
         btnFullScr.setOnClickListener { rotateScreen() }
         btnMute.setOnClickListener {
-            currentVolume = exoPlayer?.volume
+            currentVolume = exoPlayer.volume
             if (currentVolume == 0f) {
                 exoPlayer.volume = 1f
                 btnMute.setBackgroundResource(R.drawable.ic_mute)
@@ -104,18 +106,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
-            tvResolution.visibility = View.GONE
-            rlRes.visibility = View.GONE
-        }
-        else {
-            tvResolution.visibility = View.VISIBLE
-            rlRes.visibility = View.VISIBLE
-        }
-    }
-
     private fun switchLocalFile(uriMedia:String?){
         if(uriMedia != null){
             initializePlayer()
@@ -135,33 +125,37 @@ class MainActivity : AppCompatActivity() {
         exoPlayer = SimpleExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
-            .setMediaSourceFactory(mediaSourceFactory)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
             .build().apply {
                 addMediaSource(mediaSourceHighRes)
                 addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-                playWhenReady = this.playWhenReady
+                playWhenReady = false
                 seekTo(currentWindow, playbackPosition)
                 prepare()
                 isLocal = false
         }
-        player_view.requestFocus()
-        player_view.player = exoPlayer
+        playerView.requestFocus()
+        playerView.player = exoPlayer
     }
 
     private fun initializeMedia() {
         mediaItemHigh = MediaItem.fromUri(getString(R.string.video_mp4_high))
         mediaItemLow = MediaItem.fromUri(getString(R.string.video_mp4_low))
-        mediaDataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "mediaPlayerSample"))
-        mediaSourceHighRes = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemHigh)
-        mediaSourceLowRes = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemLow)
-        mediaSourceFactory = DefaultMediaSourceFactory(mediaDataSourceFactory)
+        httpDataSourceFactory = DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true)
+        mediaDataSourceFactory = DefaultDataSourceFactory(this,httpDataSourceFactory) //for local media
+        cacheDataSourceFactory = CacheDataSource.Factory() //for online media
+            .setCache(simpleCache)
+            .setUpstreamDataSourceFactory(httpDataSourceFactory)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+        mediaSourceHighRes = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItemHigh)
+        mediaSourceLowRes = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItemLow)
     }
 
     private fun initializeLoadControl(){
         DefaultLoadControl.Builder()
             .setAllocator(DefaultAllocator(true,C.DEFAULT_BUFFER_SEGMENT_SIZE))
             .setBufferDurationsMs(
-                32*1024, 64*1024, 1024, 1024)
+                16*1024, 64*1024, 1024, 1024)
             .setTargetBufferBytes(DefaultLoadControl.DEFAULT_TARGET_BUFFER_BYTES)
             .setPrioritizeTimeOverSizeThresholds(DefaultLoadControl.DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
             .createDefaultLoadControl().also { loadControl = it }
@@ -177,7 +171,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindView() {
-        player_view = findViewById(R.id.player_view)
+        playerView = findViewById(R.id.player_view)
         tvResolution = findViewById(R.id.tvRes)
         tvPosition = findViewById(R.id.exo_position)
         btnQuality = findViewById(R.id.exo_quality_icon)
@@ -216,22 +210,35 @@ class MainActivity : AppCompatActivity() {
     private fun hideSystemUi() {
         //Handle fullscreen
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, player_view).let { controller ->
+        WindowInsetsControllerCompat(window, playerView).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 
+    //Handle screen rotation
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+            tvResolution.visibility = View.GONE
+            rlRes.visibility = View.GONE
+        }
+        else {
+            tvResolution.visibility = View.VISIBLE
+            rlRes.visibility = View.VISIBLE
+        }
+    }
+
     private fun rotateScreen(){
         if(isLandscapeOrientation()){
-            player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+            playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
             tvResolution.visibility = View.VISIBLE
             rlRes.visibility = View.VISIBLE
             btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
         }
         else {
-            player_view.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
+            playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
             tvResolution.visibility = View.GONE
             rlRes.visibility = View.GONE
@@ -251,7 +258,7 @@ class MainActivity : AppCompatActivity() {
             else {
                 isLocal = false
                 switchLocalFile(uriMedia)
-                exoPlayer.seekTo(currentWindow, playbackPosition)
+                //exoPlayer.seekTo(currentWindow, playbackPosition)
             }
         }
     }
@@ -290,5 +297,4 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val OPEN_REQUEST_CODE = 1
     }
-
 }
