@@ -19,46 +19,37 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Cache
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.MediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 
 class MainActivity : AppCompatActivity() {
     private lateinit var playerView:PlayerView
-    private lateinit var exoPlayer:SimpleExoPlayer
-    private lateinit var loadControl:LoadControl
     private var trackSelector:DefaultTrackSelector = DefaultTrackSelector()
     private var trackParams:DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().setMaxVideoSize(1920,1080).build()
-    private lateinit var mediaDataSourceFactory: DataSource.Factory
-    private lateinit var cacheDataSourceFactory: DataSource.Factory
-    private lateinit var httpDataSourceFactory: HttpDataSource.Factory
-    private lateinit var mediaSourceHighRes: ProgressiveMediaSource
-    private lateinit var mediaSourceLowRes: ProgressiveMediaSource
     private val simpleCache:SimpleCache = Cache.simpleCache
+    private var playbackParams = PlaybackParameters(1f)
     private lateinit var tvResolution:TextView
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
     private lateinit var btnFullScr:Button
     private lateinit var btnMute:Button
     private lateinit var btnFilePicker:Button
+    private lateinit var btnSpeed:Button
     private lateinit var rlRes:RelativeLayout
     private var currentWindow = 0
     private var playbackPosition = 0L
     private var currentVolume = 0F
     private var isLocal:Boolean = false
     private var uriMedia:String? = ""
-    private lateinit var mediaItemHigh:MediaItem
-    private lateinit var mediaItemLow:MediaItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,6 +69,7 @@ class MainActivity : AppCompatActivity() {
             popupMenu.show()
         }
         btnFullScr.setOnClickListener { rotateScreen() }
+        btnSpeed.setOnClickListener { changeSpeed() }
         btnMute.setOnClickListener {
             currentVolume = exoPlayer.volume
             if (currentVolume == 0f) {
@@ -131,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                 addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
                 playWhenReady = false
                 seekTo(currentWindow, playbackPosition)
+                playbackParameters = playbackParams
                 prepare()
                 isLocal = false
         }
@@ -168,17 +161,6 @@ class MainActivity : AppCompatActivity() {
             playWhenReady = this.playWhenReady
         }
         exoPlayer.release()
-    }
-
-    private fun bindView() {
-        playerView = findViewById(R.id.player_view)
-        tvResolution = findViewById(R.id.tvRes)
-        tvPosition = findViewById(R.id.exo_position)
-        btnQuality = findViewById(R.id.exo_quality_icon)
-        btnFullScr = findViewById(R.id.exo_fullscreen_icon)
-        btnMute = findViewById(R.id.exo_mute)
-        btnFilePicker = findViewById(R.id.exo_file_picker)
-        rlRes = findViewById(R.id.rlRes)
     }
 
     private fun switchHighRes(){
@@ -247,6 +229,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun changeSpeed() {
+        if(playbackParams.speed == 1f){
+            playbackParams = PlaybackParameters(2f)
+            toast("Playback speed 2x")
+        }
+        else {
+            playbackParams = PlaybackParameters(1f)
+            toast("Playback speed 1x")
+        }
+        exoPlayer.playbackParameters = playbackParams
+
+    }
+
     //Handle lifecycle
     public override fun onStart() {
         super.onStart()
@@ -294,7 +289,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun bindView() {
+        playerView = findViewById(R.id.player_view)
+        tvResolution = findViewById(R.id.tvRes)
+        tvPosition = findViewById(R.id.exo_position)
+        btnQuality = findViewById(R.id.exo_quality_icon)
+        btnFullScr = findViewById(R.id.exo_fullscreen_icon)
+        btnMute = findViewById(R.id.exo_mute)
+        btnFilePicker = findViewById(R.id.exo_file_picker)
+        rlRes = findViewById(R.id.rlRes)
+        btnSpeed = findViewById(R.id.exo_playback_speed)
+    }
+
     companion object {
         const val OPEN_REQUEST_CODE = 1
+        private lateinit var exoPlayer:SimpleExoPlayer
+        private lateinit var loadControl:LoadControl
+        private lateinit var mediaDataSourceFactory: DataSource.Factory
+        private lateinit var cacheDataSourceFactory: DataSource.Factory
+        private lateinit var httpDataSourceFactory: HttpDataSource.Factory
+        private lateinit var mediaSourceHighRes: ProgressiveMediaSource
+        private lateinit var mediaSourceLowRes: ProgressiveMediaSource
+        private lateinit var mediaItemHigh:MediaItem
+        private lateinit var mediaItemLow:MediaItem
     }
 }
