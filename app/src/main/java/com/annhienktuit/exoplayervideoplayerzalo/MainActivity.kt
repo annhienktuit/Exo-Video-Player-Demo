@@ -1,10 +1,13 @@
 package com.annhienktuit.exoplayervideoplayerzalo
+
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.media.MediaDescriptionCompat
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -13,23 +16,30 @@ import android.widget.PopupMenu
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Cache
+import com.annhienktuit.exoplayervideoplayerzalo.utils.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var playerView:PlayerView
@@ -37,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     private var trackParams:DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().setMaxVideoSize(1920,1080).build()
     private val simpleCache:SimpleCache = Cache.simpleCache
     private var playbackParams = PlaybackParameters(1f)
+    private val audioAttributes = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.CONTENT_TYPE_MOVIE).build()
+    lateinit var playerNotificationManager: PlayerNotificationManager
     private lateinit var tvResolution:TextView
     private lateinit var tvPosition:TextView
     private lateinit var btnQuality:Button
@@ -55,6 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         bindView()
         initializePlayer()
+        initializeNotification()
         tvPosition.text = "00:00"
         btnQuality.setOnClickListener {
             val popupMenu = PopupMenu(this, btnQuality)
@@ -94,20 +107,21 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri? = data?.getData()
             uriMedia = getRealPathFromURI(uri)
             switchLocalFile(uriMedia)
-            Log.i("picker:","$uriMedia")
         }
     }
 
-    private fun switchLocalFile(uriMedia:String?){
-        if(uriMedia != null){
-            initializePlayer()
-            exoPlayer.playWhenReady = false
-            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
-            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
-            exoPlayer.setMediaSource(newMediaSource)
-            exoPlayer.playWhenReady = true
-            isLocal = true
-        }
+    private fun initializeNotification() {
+        //Notification
+        val mediaSession = MediaSessionCompat(this, MEDIA_SESSION_TAG)
+        mediaSession.isActive = true
+        val mediaSessionConnector = MediaSessionConnector(mediaSession)
+        mediaSessionConnector.setPlayer(exoPlayer)
+        playerNotificationManager = PlayerNotificationManager.Builder(this, notificationID, channelID)
+            .setMediaDescriptionAdapter(DescriptionAdapter())
+            .build()
+        playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        playerNotificationManager.setMediaSessionToken(mediaSession.sessionToken)
+        playerNotificationManager.setPlayer(exoPlayer)
     }
 
     private fun initializePlayer() {
@@ -118,6 +132,7 @@ class MainActivity : AppCompatActivity() {
             .setTrackSelector(trackSelector)
             .setLoadControl(loadControl)
             .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
+            .setAudioAttributes(audioAttributes,true)
             .build().apply {
                 addMediaSource(mediaSourceHighRes)
                 addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
@@ -127,7 +142,6 @@ class MainActivity : AppCompatActivity() {
                 prepare()
                 isLocal = false
         }
-        playerView.requestFocus()
         playerView.player = exoPlayer
     }
 
@@ -189,6 +203,18 @@ class MainActivity : AppCompatActivity() {
         tvResolution.text = "Low resolution"
     }
 
+    private fun switchLocalFile(uriMedia:String?){
+        if(uriMedia != null){
+            initializePlayer()
+            exoPlayer.playWhenReady = false
+            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
+            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
+            exoPlayer.setMediaSource(newMediaSource)
+            exoPlayer.playWhenReady = true
+            isLocal = true
+        }
+    }
+
     private fun hideSystemUi() {
         //Handle fullscreen
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -239,8 +265,8 @@ class MainActivity : AppCompatActivity() {
             toast("Playback speed 1x")
         }
         exoPlayer.playbackParameters = playbackParams
-
     }
+
 
     //Handle lifecycle
     public override fun onStart() {
@@ -303,6 +329,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val OPEN_REQUEST_CODE = 1
+        const val MEDIA_SESSION_TAG = "media_session"
+        val notificationID = 123
+        val channelID = "Demo channel"
         private lateinit var exoPlayer:SimpleExoPlayer
         private lateinit var loadControl:LoadControl
         private lateinit var mediaDataSourceFactory: DataSource.Factory
