@@ -3,5 +3,5 @@
     <string name="video_mp4_low">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4</string>
     <string name="video_mp4_high">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4</string>
     <string name="music_mp3">https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_5MG.mp3</string>
-    <string name="sample_local">/storage/emulated/0/Movies/screen-20211016-162946.mp4</string>
+    <string name="sample_local">/storage/emulated/0/Download/sample.mp3</string>
 </resources>

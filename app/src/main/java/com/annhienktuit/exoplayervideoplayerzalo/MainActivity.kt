@@ -1,22 +1,27 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.media.MediaDescriptionCompat
+import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.PopupMenu
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -29,6 +34,7 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
+import com.google.android.exoplayer2.offline.DownloadService.startForeground
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
@@ -62,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     private var currentVolume = 0F
     private var isLocal:Boolean = false
     private var uriMedia:String? = ""
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -113,11 +120,12 @@ class MainActivity : AppCompatActivity() {
     private fun initializeNotification() {
         //Notification
         val mediaSession = MediaSessionCompat(this, MEDIA_SESSION_TAG)
+        val mediaController = MediaControllerCompat(this,mediaSession.sessionToken)
         mediaSession.isActive = true
         val mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlayer(exoPlayer)
         playerNotificationManager = PlayerNotificationManager.Builder(this, notificationID, channelID)
-            .setMediaDescriptionAdapter(DescriptionAdapter())
+            .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
             .build()
         playerNotificationManager.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         playerNotificationManager.setMediaSessionToken(mediaSession.sessionToken)
@@ -183,7 +191,7 @@ class MainActivity : AppCompatActivity() {
             playbackPosition = this.currentPosition
             currentWindow = this.currentWindowIndex
             setMediaSource(mediaSourceHighRes)
-            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
+            addMediaItem(MediaItem.fromUri(getString(R.string.sample_local)))
             seekTo(currentWindow, playbackPosition)
             playWhenReady = true
         }
@@ -315,6 +323,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    public override fun onDestroy() {
+        playerNotificationManager.setPlayer(null)
+        releasePlayer()
+        Log.i("lifecycle: ","onDestroy")
+        super.onDestroy()
+    }
+
     private fun bindView() {
         playerView = findViewById(R.id.player_view)
         tvResolution = findViewById(R.id.tvRes)
@@ -330,8 +345,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val OPEN_REQUEST_CODE = 1
         const val MEDIA_SESSION_TAG = "media_session"
-        val notificationID = 123
-        val channelID = "Demo channel"
+        const val notificationID = 123
+        const val channelID = "com.annhienktuit.exoplayervideoplayerzalo.NOW_PLAYING"
         private lateinit var exoPlayer:SimpleExoPlayer
         private lateinit var loadControl:LoadControl
         private lateinit var mediaDataSourceFactory: DataSource.Factory
