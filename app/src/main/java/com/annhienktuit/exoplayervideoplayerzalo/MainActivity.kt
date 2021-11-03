@@ -1,9 +1,11 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
 
+import android.Manifest
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
@@ -17,7 +19,9 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -39,7 +43,6 @@ import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
-import java.lang.Long.getLong
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkPermissions()
         setContentView(R.layout.activity_main)
         Log.i("lifecycle: ","onCreate")
         bindView()
@@ -144,9 +148,10 @@ class MainActivity : AppCompatActivity() {
             .build().apply {
                 addMediaSource(mediaSourceHighRes)
                 addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-                playWhenReady = true
                 if(currentPosition != C.TIME_UNSET) seekTo(currentWindow!!, playbackPosition!!)
                 playbackParameters = playbackParams
+                setWakeMode(C.WAKE_MODE_NETWORK)
+                playWhenReady = true
                 prepare()
                 isLocal = false
         }
@@ -358,6 +363,21 @@ class MainActivity : AppCompatActivity() {
         btnFilePicker = findViewById(R.id.exo_file_picker)
         rlRes = findViewById(R.id.rlRes)
         btnSpeed = findViewById(R.id.exo_playback_speed)
+    }
+
+    private fun checkPermissions(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.FOREGROUND_SERVICE), 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WAKE_LOCK), 1);
+        }
     }
 
     companion object {
