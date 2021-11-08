@@ -1,11 +1,16 @@
 package com.annhienktuit.exoplayervideoplayerzalo.utils
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
 
 
 object Extensions {
@@ -22,5 +27,42 @@ object Extensions {
         val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
         cursor.moveToFirst()
         return cursor.getString(column_index)
+    }
+
+    fun Activity.checkPermissions(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.FOREGROUND_SERVICE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.FOREGROUND_SERVICE), 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WAKE_LOCK) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WAKE_LOCK), 1);
+        }
+    }
+
+    fun Activity.requestFilePermissions(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1);
+        }
+    }
+
+    fun Activity.fileType(url:String):String{
+        var result:String = "."
+        var stack = ArrayDeque<Char>()
+        var lastCharacter = url[url.lastIndex]
+        var lastIndex = url.lastIndex
+        while (lastCharacter != '.'){
+            stack.addFirst(lastCharacter)
+            lastIndex --
+            lastCharacter = url[lastIndex]
+        }
+        for(i in stack){
+            result += i
+        }
+        println(result)
+        if(result == ".mp3") return "Music"
+        else if(result == ".mp4" || result == ".mkv" || result == ".m3u8") return "Video"
+        else return "Unknown type"
     }
 }

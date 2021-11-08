@@ -4,4 +4,5 @@
     <string name="video_mp4_high">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4</string>
     <string name="music_mp3">https://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>
     <string name="sample_local">/storage/emulated/0/Download/sample.mp3</string>
+    <string name="hls_sample">https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8</string>
 </resources>
