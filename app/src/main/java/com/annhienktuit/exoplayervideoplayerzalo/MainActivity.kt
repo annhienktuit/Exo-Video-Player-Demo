@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
         bindView()
         initializePlayer()
-        initializeNotification()
+        //initializeNotification()
         restorePositionfromPrefs()
         tvPosition.text = "00:00"
         btnQuality.setOnClickListener {
@@ -123,24 +123,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun initializeNotification() {
-        //Notification
-        mediaSession = MediaSessionCompat(this, MEDIA_SESSION_TAG)
-        val mediaController = MediaControllerCompat(this,mediaSession.sessionToken)
-        mediaSession.isActive = true
-        mediaSessionConnector = MediaSessionConnector(mediaSession)
-        mediaSessionConnector.setPlayer(exoPlayer)
-        playerNotificationManager = PlayerNotificationManager.Builder(this, notificationID, channelID)
-            .setMediaDescriptionAdapter(DescriptionAdapter())
-            .setSmallIconResourceId(R.drawable.logo)
-            .build()
-        playerNotificationManager.apply {
-            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            setMediaSessionToken(mediaSession.sessionToken)
-            setUseNextAction(true)
-            setPlayer(exoPlayer)
-        }
-    }
+//    private fun initializeNotification() {
+//        //Notification
+//        mediaSession = MediaSessionCompat(this, MEDIA_SESSION_TAG)
+//        val mediaController = MediaControllerCompat(this,mediaSession.sessionToken)
+//        mediaSession.isActive = true
+//        mediaSessionConnector = MediaSessionConnector(mediaSession)
+//        mediaSessionConnector.setPlayer(exoPlayer)
+//        playerNotificationManager = PlayerNotificationManager.Builder(this, notificationID, channelID)
+//            .setMediaDescriptionAdapter(DescriptionAdapter())
+//            .setSmallIconResourceId(R.drawable.logo)
+//            .build()
+//        playerNotificationManager.apply {
+//            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//            setMediaSessionToken(mediaSession.sessionToken)
+//            setUseNextAction(true)
+//            setPlayer(exoPlayer)
+//        }
+//    }
 
     private fun initializePlayer() {
         initializeMedia()
