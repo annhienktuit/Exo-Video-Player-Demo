@@ -1,6 +1,7 @@
 package com.annhienktuit.exoplayervideoplayerzalo.adapters
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +10,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.annhienktuit.exoplayervideoplayerzalo.MainActivity
-import com.annhienktuit.exoplayervideoplayerzalo.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
 
 class MediaItemAdapter: RecyclerView.Adapter<MediaItemAdapter.ViewHolder>() {
@@ -45,8 +45,7 @@ class MediaItemAdapter: RecyclerView.Adapter<MediaItemAdapter.ViewHolder>() {
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 val mediaName = arrayURL[position]
-                Toast.makeText(itemView.context, "Playing $mediaName",Toast.LENGTH_SHORT).show()
-                val intent = Intent(itemView.context, PlayerActivity::class.java)
+                val intent = Intent(itemView.context, MainActivity::class.java)
                 intent.putExtra("url",mediaName)
                 intent.putExtra("index",position)
                 intent.putExtra("listUrl",arrayURL)

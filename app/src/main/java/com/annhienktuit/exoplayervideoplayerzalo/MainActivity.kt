@@ -31,8 +31,9 @@ import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.ExtractorMediaSource
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
@@ -42,6 +43,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 
 
 class MainActivity : AppCompatActivity() {
@@ -80,18 +82,6 @@ class MainActivity : AppCompatActivity() {
         //initializeNotification()
         restorePositionfromPrefs()
         tvPosition.text = "00:00"
-        btnQuality.setOnClickListener {
-            val popupMenu = PopupMenu(this, btnQuality)
-            popupMenu.menuInflater.inflate(R.menu.popup_menu, popupMenu.menu)
-            popupMenu.setOnMenuItemClickListener { item ->
-                when(item.itemId){
-                    R.id.action_highres -> switchHighRes()
-                    else -> switchLowRes()
-                }
-                true
-            }
-            popupMenu.show()
-        }
         btnFullScr.setOnClickListener { rotateScreen() }
         btnSpeed.setOnClickListener { changeSpeed() }
         btnMute.setOnClickListener {
@@ -119,51 +109,18 @@ class MainActivity : AppCompatActivity() {
         if (resultCode === RESULT_OK && requestCode === OPEN_REQUEST_CODE) {
             val uri: Uri? = data?.getData()
             uriLocalMedia = getRealPathFromURI(uri)
-            switchLocalFile(uriLocalMedia)
+            //switchLocalFile(uriLocalMedia)
         }
     }
-
-//    private fun initializeNotification() {
-//        //Notification
-//        mediaSession = MediaSessionCompat(this, MEDIA_SESSION_TAG)
-//        val mediaController = MediaControllerCompat(this,mediaSession.sessionToken)
-//        mediaSession.isActive = true
-//        mediaSessionConnector = MediaSessionConnector(mediaSession)
-//        mediaSessionConnector.setPlayer(exoPlayer)
-//        playerNotificationManager = PlayerNotificationManager.Builder(this, notificationID, channelID)
-//            .setMediaDescriptionAdapter(DescriptionAdapter())
-//            .setSmallIconResourceId(R.drawable.logo)
-//            .build()
-//        playerNotificationManager.apply {
-//            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//            setMediaSessionToken(mediaSession.sessionToken)
-//            setUseNextAction(true)
-//            setPlayer(exoPlayer)
-//        }
-//    }
 
     private fun initializePlayer() {
         initializeMedia()
         initializeLoadControl()
         trackSelector.parameters = trackParams
-            exoPlayer = SimpleExoPlayer.Builder(this)
-                .setTrackSelector(trackSelector)
-                .setLoadControl(loadControl)
-                .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
-                .setAudioAttributes(audioAttributes,true)
-                .build().apply {
-                    addMediaSource(mediaSourceHighRes)
-                    addMediaSource(hlsMediasource)
-                    addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-                    if(currentPosition != C.TIME_UNSET) seekTo(currentWindow!!, playbackPosition!!)
-                    playbackParameters = playbackParams
-                    setWakeMode(C.WAKE_MODE_NETWORK)
-                    playWhenReady = true
-                    prepare()
-                    isLocal = false
-                }
-            playerView.player = exoPlayer
-            playerView.keepScreenOn = true
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl)
+        exoPlayer.prepare(mediaSource)
+        playerView.player = exoPlayer
+        playerView.keepScreenOn = true
     }
 
     private fun initializeLoadControl(){
@@ -177,23 +134,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeMedia() {
-        mediaItemHigh = MediaItem.fromUri(getString(R.string.video_mp4_high))
-        mediaItemLow = MediaItem.fromUri(getString(R.string.video_mp4_low))
-        httpDataSourceFactory = DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true)
-        mediaDataSourceFactory = DefaultDataSourceFactory(this,httpDataSourceFactory) //for local media
-        cacheDataSourceFactory = CacheDataSource.Factory() //for online media
-            .setCache(simpleCache)
-            .setUpstreamDataSourceFactory(httpDataSourceFactory)
-            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-        mediaSourceHighRes = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItemHigh)
-        mediaSourceLowRes = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItemLow)
-        initializeHlsMediaSource()
-    }
-
-    private fun initializeHlsMediaSource(){
-         hlsMediasource = HlsMediaSource.Factory(cacheDataSourceFactory)
-             .setAllowChunklessPreparation(true)
-             .createMediaSource(MediaItem.fromUri(getString(R.string.hls_sample)))
+        mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.video_mp4_high)), CacheDataSourceFactory(
+            simpleCache, DefaultHttpDataSourceFactory("DemoCache")),DefaultExtractorsFactory(),null,null,null)
     }
 
     private fun saveCurrentPosition(){
@@ -216,44 +158,6 @@ class MainActivity : AppCompatActivity() {
         currentWindow = sharedPreferences.getInt("windowsPosition",1)
         playbackPosition = sharedPreferences.getLong("playPosition",100L)
         Log.i("sharedPref: ","get: $currentWindow $playbackPosition")
-    }
-
-    private fun switchHighRes(){
-        exoPlayer.apply {
-            playWhenReady = false
-            playbackPosition = this.currentPosition
-            currentWindow = this.currentWindowIndex
-            setMediaSource(mediaSourceHighRes)
-            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-            seekTo(currentWindow!!, playbackPosition!!)
-            playWhenReady = true
-        }
-        tvResolution.text = "High resolution"
-    }
-
-    private fun switchLowRes(){
-        exoPlayer.apply {
-            playWhenReady = false
-            playbackPosition = this.currentPosition
-            currentWindow = this.currentWindowIndex
-            setMediaSource(mediaSourceLowRes)
-            addMediaItem(MediaItem.fromUri(getString(R.string.music_mp3)))
-            seekTo(currentWindow!!, playbackPosition!!)
-            playWhenReady = true
-        }
-        tvResolution.text = "Low resolution"
-    }
-
-    private fun switchLocalFile(uriMedia:String?){
-        if(uriMedia != null){
-            initializePlayer()
-            exoPlayer.playWhenReady = false
-            val mediaItemFromFile = MediaItem.fromUri(uriMedia!!)
-            val newMediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(mediaItemFromFile)
-            exoPlayer.setMediaSource(newMediaSource)
-            exoPlayer.playWhenReady = true
-            isLocal = true
-        }
     }
 
     private fun releasePlayer() {
@@ -319,15 +223,12 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         if (Util.SDK_INT >= 24) {
             Log.i("lifecycle: ","onStart")
-            if (mediaSession != null) {
-                mediaSession.setActive(true);
-            }
             if(!isLocal){
                 initializePlayer()
             }
             else {
                 isLocal = false
-                switchLocalFile(uriLocalMedia)
+                //switchLocalFile(uriLocalMedia)
             }
         }
     }
@@ -342,7 +243,7 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 isLocal = false
-                switchLocalFile(uriLocalMedia)
+               // switchLocalFile(uriLocalMedia)
             }
         }
     }
@@ -387,23 +288,12 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val OPEN_REQUEST_CODE = 1
-        const val MEDIA_SESSION_TAG = "media_session"
-        const val notificationID = 123
-        const val channelID = "com.annhienktuit.exoplayervideoplayerzalo"
         private var currentWindow:Int = 0
         private var playbackPosition:Long = 0L
         private var currentVolume = 0F
         private lateinit var exoPlayer:SimpleExoPlayer
         private lateinit var loadControl:LoadControl
-        private lateinit var mediaDataSourceFactory: DataSource.Factory
-        lateinit var cacheDataSourceFactory: DataSource.Factory
-        private lateinit var httpDataSourceFactory: HttpDataSource.Factory
-        private lateinit var mediaSourceHighRes: ProgressiveMediaSource
-        private lateinit var mediaSourceLowRes: ProgressiveMediaSource
-        private lateinit var hlsMediasource: HlsMediaSource
-        private lateinit var mediaItemHigh:MediaItem
-        private lateinit var mediaItemLow:MediaItem
-        private lateinit var mediaSession:MediaSessionCompat
-        private lateinit var mediaSessionConnector: MediaSessionConnector
+        private lateinit var mediaSource: MediaSource
+        private var mediaSession:MediaSessionCompat? = null
     }
 }

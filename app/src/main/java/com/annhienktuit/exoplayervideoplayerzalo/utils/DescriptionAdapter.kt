@@ -16,9 +16,10 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) : MediaD
     override fun createCurrentContentIntent(player: Player): PendingIntent? =
         controller.sessionActivity
 
-    override fun getCurrentContentText(player: Player): CharSequence? {
-        return "Context Text Here"
+    override fun getCurrentContentText(player: Player?): String? {
+        return "text"
     }
+
 
     override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {
         return null
