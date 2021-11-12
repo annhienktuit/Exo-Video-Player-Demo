@@ -25,7 +25,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils.Companion.simpleCache
-import com.annhienktuit.exoplayervideoplayerzalo.utils.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
@@ -47,7 +46,10 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import android.R.attr.name
 
 import android.app.NotificationChannel
+import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.MainActivity.Companion.OPEN_REQUEST_CODE
+import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.NotificationUtil
@@ -95,6 +97,7 @@ class PlayerActivity : AppCompatActivity() {
         bindView()
         initializePlayer()
         initializeNotification()
+        createNotificationChannel()
         tvPosition.text = "00:00"
         btnQuality.visibility = View.GONE
         btnFilePicker.visibility = View.GONE
@@ -152,6 +155,20 @@ class PlayerActivity : AppCompatActivity() {
             setUseNextAction(true)
             setMediaSessionToken(mediaSession.sessionToken)
             setPlayer(exoPlayer)
+        }
+    }
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.notification_description)
+            val descriptionText = "DESC"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelID, name, importance).apply {
+                description = descriptionText
+            }
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

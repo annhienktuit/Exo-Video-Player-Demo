@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo.utils
+package com.annhienktuit.exoplayervideoplayerzalo.adapters
 
 import android.app.PendingIntent
 import android.graphics.Bitmap

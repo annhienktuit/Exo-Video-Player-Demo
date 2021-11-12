@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Demo Exo Player Video Player Zalo</string>
+    <string name="notification_description">Music Player</string>
     <string name="video_mp4_low">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_480_1_5MG.mp4</string>
     <string name="video_mp4_high">https://file-examples-com.github.io/uploads/2017/04/file_example_MP4_1920_18MG.mp4</string>
     <string name="music_mp3">https://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>

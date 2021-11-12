@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.View
@@ -17,12 +16,10 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils
-import com.annhienktuit.exoplayervideoplayerzalo.utils.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
