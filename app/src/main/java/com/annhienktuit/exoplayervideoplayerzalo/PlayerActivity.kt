@@ -1,41 +1,30 @@
 package com.annhienktuit.exoplayervideoplayerzalo
 
-import android.R.attr
 import android.app.NotificationManager
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.res.Configuration
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.PopupMenu
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils
-import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils.Companion.simpleCache
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
-import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
-import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.requestFilePermissions
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
@@ -43,16 +32,16 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
-import android.R.attr.name
 
 import android.app.NotificationChannel
 import android.content.Context
-import androidx.core.app.NotificationManagerCompat
-import com.annhienktuit.exoplayervideoplayerzalo.MainActivity.Companion.OPEN_REQUEST_CODE
+import android.media.MediaMetadataRetriever
+import android.support.v4.media.MediaDescriptionCompat
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.util.NotificationUtil
+import java.lang.Exception
 
 
 class PlayerActivity : AppCompatActivity() {
@@ -65,8 +54,9 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnFilePicker: Button
     private lateinit var btnSpeed: Button
     private var urlMedia:String = ""
+    private lateinit var mediaTitleList: ArrayList<String>
     private lateinit var urlMediaList: Array<String>
-    private lateinit var arrayMediaSource:ArrayList<MediaSource>
+    private lateinit var mediaSourceList:ArrayList<MediaSource>
     var currentVolume = 0F
     var currentWindow = 0
     private var playbackParams = PlaybackParameters(1f)
@@ -84,6 +74,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaController: MediaControllerCompat
     private lateinit var loadControl:LoadControl
     private val simpleCache: SimpleCache = CacheUtils.simpleCache
+    private lateinit var mediaMetadataRetriever: MediaMetadataRetriever
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -116,7 +107,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-
     private fun initializePlayer(){
         initializeMedia()
         initializeLoadControl()
@@ -143,6 +133,20 @@ class PlayerActivity : AppCompatActivity() {
         mediaController = MediaControllerCompat(this, mediaSession.sessionToken)
         mediaSession.isActive = true
         mediaSessionConnector = MediaSessionConnector(mediaSession)
+        val timelineQueueNavigator = object : TimelineQueueNavigator(mediaSession) {
+            override fun getMediaDescription(
+                player: Player,
+                windowIndex: Int
+            ): MediaDescriptionCompat {
+                player.let { safePlayer ->
+                    return MediaDescriptionCompat.Builder().apply {
+                        setTitle(getMetaDatafromSong(urlMediaList[windowIndex]))
+                    }.build()
+                }
+                return MediaDescriptionCompat.Builder().build()
+            }
+        }
+        mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
         mediaSessionConnector.setPlayer(exoPlayer)
         playerNotificationManager = PlayerNotificationManager.Builder(this,
            notificationID,
@@ -185,13 +189,26 @@ class PlayerActivity : AppCompatActivity() {
         defaultMediaSource = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(defaultMediaItem)
     }
 
-    private fun preparePlaylist():ConcatenatingMediaSource{
-        arrayMediaSource = ArrayList()
-        for(media in urlMediaList){
-            arrayMediaSource.add(ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(MediaItem.fromUri(media)))
+    private fun getMetaDatafromSong(url: String):String{
+        mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(url)
+        return try {
+            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
+        } catch (e:Exception){
+            Log.i("metaData: ",e.toString())
+            "No title"
         }
+    }
+
+    private fun preparePlaylist():ConcatenatingMediaSource{
+        mediaSourceList = ArrayList()
+        mediaTitleList = ArrayList()
+        for(media in urlMediaList){
+            mediaSourceList.add(ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(MediaItem.fromUri(media)))
+        }
+
         val concatenatingMediaSource = ConcatenatingMediaSource()
-        concatenatingMediaSource.addMediaSources(arrayMediaSource)
+        concatenatingMediaSource.addMediaSources(mediaSourceList)
         return concatenatingMediaSource
     }
 
