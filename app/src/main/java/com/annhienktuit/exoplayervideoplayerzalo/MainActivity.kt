@@ -22,7 +22,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils
-import com.annhienktuit.exoplayervideoplayerzalo.utils.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getRealPathFromURI
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
@@ -39,11 +38,12 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
+import com.google.android.exoplayer2.upstream.cache.*
+import android.os.AsyncTask
+import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
+import java.lang.Exception
 
 
 class MainActivity : AppCompatActivity() {
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         initializeLoadControl()
         trackSelector.parameters = trackParams
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl)
-        exoPlayer.prepare(mediaSource)
+        exoPlayer.prepare(mediaSourcePrecache)
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
     }
@@ -134,8 +134,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeMedia() {
-        mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.video_mp4_high)), CacheDataSourceFactory(
-            simpleCache, DefaultHttpDataSourceFactory("DemoCache")),DefaultExtractorsFactory(),null,null,null)
+//        mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)), CacheDataSourceFactory(
+//            simpleCache, DefaultHttpDataSourceFactory("DemoCache")),DefaultExtractorsFactory(),null,null,null)
+        mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)),DefaultHttpDataSourceFactory("http-useragent"),DefaultExtractorsFactory(),null,null,null)
+        val uri = getString(R.string.pre_caching_mp3)
+        val preCaching = PreLoadingCache(this)
+        preCaching.execute(uri)
+        mediaSourcePrecache = ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
+            simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null)
     }
 
     private fun saveCurrentPosition(){
@@ -294,6 +300,9 @@ class MainActivity : AppCompatActivity() {
         private lateinit var exoPlayer:SimpleExoPlayer
         private lateinit var loadControl:LoadControl
         private lateinit var mediaSource: MediaSource
+        private lateinit var mediaSourcePrecache: MediaSource
+        private lateinit var dataSource: DataSource
         private var mediaSession:MediaSessionCompat? = null
     }
+
 }
