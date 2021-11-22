@@ -43,6 +43,7 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.cache.*
 import android.os.AsyncTask
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import java.lang.Exception
 
 
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var isLocal:Boolean = false
     private var uriLocalMedia:String? = ""
     private var urlMedia:String = ""
+    private var mediaSourceList = ArrayList<MediaSource>()
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,11 +116,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializePlayer() {
-        initializeMedia()
+        val mediaList = initializeMedia()
         initializeLoadControl()
         trackSelector.parameters = trackParams
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl)
-        exoPlayer.prepare(mediaSourcePrecache)
+        exoPlayer.prepare(mediaList)
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
     }
@@ -133,15 +135,19 @@ class MainActivity : AppCompatActivity() {
             .createDefaultLoadControl().also { loadControl = it }
     }
 
-    private fun initializeMedia() {
-//        mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)), CacheDataSourceFactory(
-//            simpleCache, DefaultHttpDataSourceFactory("DemoCache")),DefaultExtractorsFactory(),null,null,null)
+    private fun initializeMedia(): ConcatenatingMediaSource {
+        mediaSourceList = ArrayList()
+        var preCachingMediaURL = arrayOf(getString(R.string.pre_caching_mp3),getString(R.string.music_mp3),getString(R.string.pre_caching_mp3_2))
         mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)),DefaultHttpDataSourceFactory("http-useragent"),DefaultExtractorsFactory(),null,null,null)
-        val uri = getString(R.string.pre_caching_mp3)
-        val preCaching = PreLoadingCache(this)
-        preCaching.execute(uri)
-        mediaSourcePrecache = ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
-            simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null)
+        for(uri in preCachingMediaURL){
+            val preCaching = PreLoadingCache(this)
+            preCaching.execute(uri)
+            mediaSourceList.add(ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
+                simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null))
+        }
+        val concatenatingMediaSource = ConcatenatingMediaSource()
+        concatenatingMediaSource.addMediaSources(mediaSourceList)
+        return concatenatingMediaSource
     }
 
     private fun saveCurrentPosition(){
