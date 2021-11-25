@@ -65,4 +65,27 @@ object Extensions {
         else if(result == ".mp4" || result == ".mkv" || result == ".m3u8") return "Video"
         else return "Unknown type"
     }
+
+    fun Activity.splitSongName(url:String):String{
+        var start = false
+        var result:String = ""
+        var stack = ArrayDeque<Char>()
+        var lastCharacter = url[url.lastIndex]
+        var lastIndex = url.lastIndex
+        while (lastCharacter != '/'){
+            if(lastCharacter == '_') start = true
+            if(start == true){
+                stack.addFirst(lastCharacter)
+            }
+
+            lastIndex --
+            lastCharacter = url[lastIndex]
+        }
+        for(i in stack){
+            result += i
+        }
+        result = result.dropLast(1)
+        println(result)
+        return result
+    }
 }

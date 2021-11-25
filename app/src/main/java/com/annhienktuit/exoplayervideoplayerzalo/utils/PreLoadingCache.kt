@@ -3,16 +3,15 @@ package com.annhienktuit.exoplayervideoplayerzalo.utils
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
-import android.provider.Settings.Global.getString
 import android.util.Log
-import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils.Companion.simpleCache
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DataSpec
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.*
+import com.google.android.exoplayer2.upstream.cache.CacheDataSink
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource.DEFAULT_MAX_CACHE_FILE_SIZE
 import com.google.android.exoplayer2.upstream.cache.CacheUtil
-import com.google.android.exoplayer2.util.Util
 import java.io.IOException
+
 
 class PreLoadingCache(): AsyncTask<String, Void, Void>() {
     var uri: String? = null
@@ -26,10 +25,13 @@ class PreLoadingCache(): AsyncTask<String, Void, Void>() {
             Log.i("preloading: ", "start at thread ${thread.id}")
             this.uri = uri[0]
             val mediaUri = Uri.parse(this.uri)
+            val buffer = ByteArray(CacheUtil.DEFAULT_BUFFER_SIZE_BYTES)
             val progressListener = CacheUtil.CachingCounters()
             val dataSpec = DataSpec(mediaUri)
-            val dataSource = DefaultDataSourceFactory(mContext, Util.getUserAgent(mContext, "cache-preload")).createDataSource()
-            cacheVideo(dataSpec,dataSource,progressListener)
+            val upstreamDataSource = DefaultHttpDataSourceFactory("pre-cache").createDataSource()
+            val dataSink = CacheDataSink(simpleCache,DEFAULT_MAX_CACHE_FILE_SIZE)
+            val cacheDataSource = CacheDataSource(simpleCache, upstreamDataSource, FileDataSource(), dataSink,0, null,CacheKeyProvider())
+            cacheVideo(dataSpec, cacheDataSource,buffer, progressListener)
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -37,15 +39,20 @@ class PreLoadingCache(): AsyncTask<String, Void, Void>() {
     }
     private fun cacheVideo(
         dataSpec: DataSpec,
-        dataSource: DataSource,
+        cacheDataSource: CacheDataSource,
+        buffer: ByteArray,
         progressListener: CacheUtil.CachingCounters
     ) {
         CacheUtil.cache(
             dataSpec,
             simpleCache,
-            dataSource,
+            cacheDataSource,
+            buffer,
+            null,
+            0,
             progressListener,
-            null
+            null,
+            false
         )
         Log.i("cachedbytes: ",progressListener.totalCachedBytes().toString())
     }

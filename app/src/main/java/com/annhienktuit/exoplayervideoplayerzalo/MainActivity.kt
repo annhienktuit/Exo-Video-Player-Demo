@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.util.Util
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.upstream.cache.*
 import android.os.AsyncTask
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.splitSongName
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import java.lang.Exception
@@ -137,13 +138,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun initializeMedia(): ConcatenatingMediaSource {
         mediaSourceList = ArrayList()
-        var preCachingMediaURL = arrayOf(getString(R.string.pre_caching_mp3),getString(R.string.music_mp3),getString(R.string.pre_caching_mp3_2))
+        //val preCachingMediaURL = arrayOf(getString(R.string.pre_caching_mp3),getString(R.string.music_mp3),getString(R.string.pre_caching_mp3_2),getString(R.string.precaching_500kb),getString(R.string.precaching_1mb))
+        val preCachingMediaURL = arrayOf("https://www.mboxdrive.com/song_bai1.mp3","https://www.mboxdrive.com/song_bai2.mp3")
         mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)),DefaultHttpDataSourceFactory("http-useragent"),DefaultExtractorsFactory(),null,null,null)
         for(uri in preCachingMediaURL){
             val preCaching = PreLoadingCache(this)
             preCaching.execute(uri)
-            mediaSourceList.add(ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
-                simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null))
+            var mediaSource = ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
+                simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null)
+            mediaSourceList.add(mediaSource)
         }
         val concatenatingMediaSource = ConcatenatingMediaSource()
         concatenatingMediaSource.addMediaSources(mediaSourceList)
