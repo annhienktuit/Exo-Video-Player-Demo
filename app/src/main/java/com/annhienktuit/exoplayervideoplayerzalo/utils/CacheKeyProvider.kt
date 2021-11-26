@@ -1,11 +1,14 @@
 package com.annhienktuit.exoplayervideoplayerzalo.utils
 
+import android.util.Log
 import com.google.android.exoplayer2.upstream.cache.CacheKeyFactory
 import com.google.android.exoplayer2.upstream.DataSpec
 
 class CacheKeyProvider: CacheKeyFactory {
     override fun buildCacheKey(dataSpec: DataSpec): String? {
-        return if (dataSpec.key != null) dataSpec.key else generateKey(dataSpec.uri.toString())
+        val key = generateKey(dataSpec.uri.toString())
+        Log.i("buildKey: ",key)
+        return key
     }
 
     private fun generateKey(url: String): String? {
@@ -26,7 +29,6 @@ class CacheKeyProvider: CacheKeyFactory {
             result += i
         }
         result = result.dropLast(1)
-        println(result)
         return result
     }
 }

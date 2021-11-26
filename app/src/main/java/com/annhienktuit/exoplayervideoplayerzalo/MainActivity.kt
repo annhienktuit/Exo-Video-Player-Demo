@@ -139,13 +139,13 @@ class MainActivity : AppCompatActivity() {
     private fun initializeMedia(): ConcatenatingMediaSource {
         mediaSourceList = ArrayList()
         //val preCachingMediaURL = arrayOf(getString(R.string.pre_caching_mp3),getString(R.string.music_mp3),getString(R.string.pre_caching_mp3_2),getString(R.string.precaching_500kb),getString(R.string.precaching_1mb))
-        val preCachingMediaURL = arrayOf("https://www.mboxdrive.com/song_bai1.mp3","https://www.mboxdrive.com/song_bai2.mp3")
+        val preCachingMediaURL = arrayOf("https://www.mboxdrive.com/song_bai1.mp3","https://www.mboxdrive.com/song_bai2.mp3",getString(R.string.music_mp3))
         mediaSource = ExtractorMediaSource(Uri.parse(getString(R.string.music_mp3)),DefaultHttpDataSourceFactory("http-useragent"),DefaultExtractorsFactory(),null,null,null)
         for(uri in preCachingMediaURL){
             val preCaching = PreLoadingCache(this)
             preCaching.execute(uri)
             var mediaSource = ExtractorMediaSource(Uri.parse(uri), CacheDataSourceFactory(
-                simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,null)
+                simpleCache, DefaultHttpDataSourceFactory("pre-cache")),DefaultExtractorsFactory(),null,null,splitSongName(uri))
             mediaSourceList.add(mediaSource)
         }
         val concatenatingMediaSource = ConcatenatingMediaSource()
