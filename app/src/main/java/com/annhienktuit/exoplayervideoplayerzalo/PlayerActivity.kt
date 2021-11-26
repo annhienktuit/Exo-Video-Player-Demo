@@ -38,6 +38,7 @@ import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.splitSongName
+import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
@@ -56,7 +57,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnSpeed: Button
     private var urlMedia:String = ""
     private lateinit var mediaTitleList: ArrayList<String>
-    private lateinit var urlMediaList: Array<String>
+    private lateinit var urlMediaList: ArrayList<String>
     private lateinit var mediaSourceList:ArrayList<MediaSource>
     var currentVolume = 0F
     var currentWindow = 0
@@ -80,9 +81,11 @@ class PlayerActivity : AppCompatActivity() {
         checkPermissions()
         val extras:Bundle? = intent.extras
         if(extras !=  null){
+            mediaTitleList = ArrayList()
             urlMedia = extras.getString("url").toString()
-            urlMediaList = extras.getStringArray("listUrl") as Array<String>
+            urlMediaList = extras.getStringArrayList("listUrl") as ArrayList<String>
             currentWindow = extras.getInt("index")
+            mediaTitleList = extras.getStringArrayList("listTitle") as ArrayList<String>
         }
         bindView()
         initializePlayer()
@@ -135,7 +138,7 @@ class PlayerActivity : AppCompatActivity() {
             ): MediaDescriptionCompat {
                 player.let { safePlayer ->
                     return MediaDescriptionCompat.Builder().apply {
-                        "Song title"
+                        setTitle(mediaTitleList[windowIndex])
                     }.build()
                 }
                 return MediaDescriptionCompat.Builder().build()
@@ -171,25 +174,15 @@ class PlayerActivity : AppCompatActivity() {
         cacheDataSourceFactory = CacheDataSourceFactory(simpleCache, httpDataSourceFactory)
     }
 
-    private fun getMetaDatafromSong(url: String):String{
-        mediaMetadataRetriever = MediaMetadataRetriever()
-        mediaMetadataRetriever.setDataSource(url)
-        return try {
-            mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-        } catch (e:Exception){
-            Log.i("metaData: ",e.toString())
-            "No title"
-        }
-    }
-
     private fun preparePlaylist():ConcatenatingMediaSource{
         mediaSourceList = ArrayList()
-        mediaTitleList = ArrayList()
         for(url in urlMediaList){
+            val preCaching = PreLoadingCache(this)
+            preCaching.execute(url)
             mediaSourceList.add(
                 ExtractorMediaSource(
                     Uri.parse(url), cacheDataSourceFactory,
-                    DefaultExtractorsFactory(),null,null,null))
+                    DefaultExtractorsFactory(),null,null,splitSongName(url)))
         }
 
         val concatenatingMediaSource = ConcatenatingMediaSource()
