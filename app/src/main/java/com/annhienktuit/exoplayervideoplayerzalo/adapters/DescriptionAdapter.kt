@@ -16,7 +16,7 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) : MediaD
     override fun createCurrentContentIntent(player: Player): PendingIntent? =
         controller.sessionActivity
 
-    override fun getCurrentContentText(player: Player): CharSequence? {
+    override fun getCurrentContentText(player: Player): String? {
         return "Demo ExoPlayer"
     }
 

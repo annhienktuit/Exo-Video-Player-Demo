@@ -44,23 +44,11 @@
 
         <TextView android:id="@id/exo_error_message"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/exo_error_message_height"
             android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/exo_error_message_margin_bottom"
-            android:gravity="center"
-            android:textColor="@color/exo_white"
-            android:textSize="@dimen/exo_error_message_text_size"
-            android:background="@drawable/exo_rounded_rectangle"
-            android:paddingLeft="@dimen/exo_error_message_text_padding_horizontal"
-            android:paddingRight="@dimen/exo_error_message_text_padding_horizontal"
-            android:paddingTop="@dimen/exo_error_message_text_padding_vertical"
-            android:paddingBottom="@dimen/exo_error_message_text_padding_vertical"/>
+            android:gravity="center"  android:layout_height="100dp"/>
 
     </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 
-    <FrameLayout android:id="@id/exo_ad_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
     <FrameLayout android:id="@id/exo_overlay"
         android:layout_width="match_parent"
@@ -71,4 +59,3 @@
         android:layout_height="match_parent"/>
 
 </merge>
-

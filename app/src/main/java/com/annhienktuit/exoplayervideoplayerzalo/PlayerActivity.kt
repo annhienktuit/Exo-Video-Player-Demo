@@ -23,8 +23,6 @@ import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
-import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
@@ -36,11 +34,14 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import android.app.NotificationChannel
 import android.content.Context
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.splitSongName
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
+import com.google.android.exoplayer2.source.*
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import java.lang.Exception
 
 
@@ -66,8 +67,6 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaDataSourceFactory: DataSource.Factory
     private lateinit var cacheDataSourceFactory: DataSource.Factory
     private lateinit var httpDataSourceFactory: HttpDataSource.Factory
-    private lateinit var defaultMediaItem: MediaItem
-    private lateinit var defaultMediaSource: ProgressiveMediaSource
     private lateinit var mediaSession:MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var playerNotificationManager: PlayerNotificationManager
@@ -112,17 +111,13 @@ class PlayerActivity : AppCompatActivity() {
         initializeLoadControl()
         val mediaSourceList = preparePlaylist()
         trackSelector.parameters = trackParams
-        exoPlayer = SimpleExoPlayer.Builder(this)
-            .setTrackSelector(trackSelector)
-            .setLoadControl(loadControl)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
-            .setAudioAttributes(audioAttributes,true)
-            .build().apply {
-                prepare(mediaSourceList)
-                seekTo(currentWindow,1)
-                playbackParameters = playbackParams
-                setWakeMode(C.WAKE_MODE_NETWORK)
-            }
+        exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector, loadControl)
+        exoPlayer.playbackParameters = playbackParams
+        exoPlayer.apply {
+            prepare(mediaSourceList)
+            seekTo(currentWindow, 1)
+            playbackParameters = playbackParams
+        }
         exoPlayer.playWhenReady = true
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
@@ -140,23 +135,16 @@ class PlayerActivity : AppCompatActivity() {
             ): MediaDescriptionCompat {
                 player.let { safePlayer ->
                     return MediaDescriptionCompat.Builder().apply {
-                        setTitle(getMetaDatafromSong(urlMediaList[windowIndex]))
+                        "Song title"
                     }.build()
                 }
                 return MediaDescriptionCompat.Builder().build()
             }
         }
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
-        mediaSessionConnector.setPlayer(exoPlayer)
-        playerNotificationManager = PlayerNotificationManager.Builder(this,
-           notificationID,
-            channelID)
-            .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
-            .setSmallIconResourceId(R.drawable.ic_noti_logo)
-            .build()
+        mediaSessionConnector.setPlayer(exoPlayer, null)
+        playerNotificationManager = PlayerNotificationManager(this, channelID, notificationID,  DescriptionAdapter(mediaController))
         playerNotificationManager.apply {
-            setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            setUseNextAction(true)
             setMediaSessionToken(mediaSession.sessionToken)
             setPlayer(exoPlayer)
         }
@@ -177,16 +165,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initializeMedia() {
-        defaultMediaItem = MediaItem.fromUri(urlMedia)
-        httpDataSourceFactory = DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true)
-        mediaDataSourceFactory = DefaultDataSourceFactory(this,
-            httpDataSourceFactory
+        httpDataSourceFactory = DefaultHttpDataSourceFactory("pre-cache")
+        mediaDataSourceFactory = DefaultDataSourceFactory(this, httpDataSourceFactory
         ) //for local media
-        cacheDataSourceFactory = CacheDataSource.Factory() //for online media
-            .setCache(simpleCache)
-            .setUpstreamDataSourceFactory(httpDataSourceFactory)
-            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-        defaultMediaSource = ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(defaultMediaItem)
+        cacheDataSourceFactory = CacheDataSourceFactory(simpleCache, httpDataSourceFactory)
     }
 
     private fun getMetaDatafromSong(url: String):String{
@@ -203,8 +185,11 @@ class PlayerActivity : AppCompatActivity() {
     private fun preparePlaylist():ConcatenatingMediaSource{
         mediaSourceList = ArrayList()
         mediaTitleList = ArrayList()
-        for(media in urlMediaList){
-            mediaSourceList.add(ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(MediaItem.fromUri(media)))
+        for(url in urlMediaList){
+            mediaSourceList.add(
+                ExtractorMediaSource(
+                    Uri.parse(url), cacheDataSourceFactory,
+                    DefaultExtractorsFactory(),null,null,null))
         }
 
         val concatenatingMediaSource = ConcatenatingMediaSource()

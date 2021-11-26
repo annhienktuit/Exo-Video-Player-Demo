@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.annhienktuit.exoplayervideoplayerzalo.MainActivity
 import com.annhienktuit.exoplayervideoplayerzalo.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import java.lang.Exception
