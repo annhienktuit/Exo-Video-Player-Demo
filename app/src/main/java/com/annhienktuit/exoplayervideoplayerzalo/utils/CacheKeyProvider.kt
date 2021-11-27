@@ -5,8 +5,13 @@ import com.google.android.exoplayer2.upstream.cache.CacheKeyFactory
 import com.google.android.exoplayer2.upstream.DataSpec
 
 class CacheKeyProvider: CacheKeyFactory {
+    var id: String? = null
+    constructor(id: String){
+        this.id = id
+    }
     override fun buildCacheKey(dataSpec: DataSpec): String? {
-        val key = generateKey(dataSpec.uri.toString())
+        //val key = generateKey(dataSpec.uri.toString())
+        val key = id
         Log.i("buildKey: ",key)
         return key
     }

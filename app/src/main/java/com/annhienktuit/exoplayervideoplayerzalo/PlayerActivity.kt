@@ -7,12 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.app.NotificationCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -28,7 +26,6 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 
 import android.app.NotificationChannel
@@ -37,13 +34,13 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
+import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheParams
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.splitSongName
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
-import java.lang.Exception
 
 
 class PlayerActivity : AppCompatActivity() {
@@ -57,8 +54,10 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnSpeed: Button
     private var urlMedia:String = ""
     private lateinit var mediaTitleList: ArrayList<String>
-    private lateinit var urlMediaList: ArrayList<String>
+    private lateinit var mediaURLList: ArrayList<String>
     private lateinit var mediaSourceList:ArrayList<MediaSource>
+    private lateinit var mediaArtistList: ArrayList<String>
+    private lateinit var mediaIDList: ArrayList<String>
     var currentVolume = 0F
     var currentWindow = 0
     private var playbackParams = PlaybackParameters(1f)
@@ -82,10 +81,14 @@ class PlayerActivity : AppCompatActivity() {
         val extras:Bundle? = intent.extras
         if(extras !=  null){
             mediaTitleList = ArrayList()
+            mediaArtistList = ArrayList()
+            mediaIDList = ArrayList()
             urlMedia = extras.getString("url").toString()
-            urlMediaList = extras.getStringArrayList("listUrl") as ArrayList<String>
             currentWindow = extras.getInt("index")
+            mediaURLList = extras.getStringArrayList("listUrl") as ArrayList<String>
             mediaTitleList = extras.getStringArrayList("listTitle") as ArrayList<String>
+            mediaArtistList = extras.getStringArrayList("listArtist") as ArrayList<String>
+            mediaIDList = extras.getStringArrayList("listID") as ArrayList<String>
         }
         bindView()
         initializePlayer()
@@ -139,6 +142,7 @@ class PlayerActivity : AppCompatActivity() {
                 player.let { safePlayer ->
                     return MediaDescriptionCompat.Builder().apply {
                         setTitle(mediaTitleList[windowIndex])
+                        setDescription(mediaArtistList[windowIndex])
                     }.build()
                 }
                 return MediaDescriptionCompat.Builder().build()
@@ -176,13 +180,14 @@ class PlayerActivity : AppCompatActivity() {
 
     private fun preparePlaylist():ConcatenatingMediaSource{
         mediaSourceList = ArrayList()
-        for(url in urlMediaList){
+        for(i in 0 until mediaURLList.size){
             val preCaching = PreLoadingCache(this)
-            preCaching.execute(url)
+            var params = CacheParams(mediaIDList[i],mediaURLList[i])
+            preCaching.execute(params)
             mediaSourceList.add(
                 ExtractorMediaSource(
-                    Uri.parse(url), cacheDataSourceFactory,
-                    DefaultExtractorsFactory(),null,null,splitSongName(url)))
+                    Uri.parse(mediaURLList[i]), cacheDataSourceFactory,
+                    DefaultExtractorsFactory(),null,null,mediaIDList[i]))
         }
 
         val concatenatingMediaSource = ConcatenatingMediaSource()
@@ -212,7 +217,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun rotateScreen(){
         if(isLandscapeOrientation()){
             playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen)
         }
         else {

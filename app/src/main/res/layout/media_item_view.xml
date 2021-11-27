@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardView"
     app:cardCornerRadius="8dp"
-    android:elevation="6dp"
+    android:elevation="12dp"
     app:contentPadding="4dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,6 +31,7 @@
             android:text="Media Title"
             android:textColor="@color/zmpurple"
             android:textStyle="bold"
+            android:textSize="16dp"
             app:layout_constraintLeft_toRightOf="@id/media_thumbnail"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="16dp"/>

@@ -37,12 +37,16 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         var mediaTitle:TextView
         var arrayURL = ArrayList<String>()
         var arrayTitle= ArrayList<String>()
+        var arrayArtist = ArrayList<String>()
+        var arrayID = ArrayList<String>()
         init {
             mediaTitle = itemView.findViewById(R.id.media_title)
             mediaURL = itemView.findViewById(R.id.media_url)
             for(media in mediaList){
+                arrayID.add(media.id)
                 arrayURL.add(media.url)
                 arrayTitle.add(media.songName)
+                arrayArtist.add(media.artist)
             }
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -52,6 +56,8 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
                 intent.putExtra("index",position)
                 intent.putExtra("listUrl",arrayURL)
                 intent.putExtra("listTitle",arrayTitle)
+                intent.putExtra("listArtist",arrayArtist)
+                intent.putExtra("listID",arrayID)
                 itemView.context.startActivity(intent)
             }
         }
