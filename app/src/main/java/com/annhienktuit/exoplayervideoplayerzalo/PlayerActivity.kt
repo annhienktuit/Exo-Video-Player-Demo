@@ -121,6 +121,7 @@ class PlayerActivity : AppCompatActivity() {
         exoPlayer.playbackParameters = playbackParams
         exoPlayer.apply {
             prepare(mediaSourceList)
+            setAudioAttributes(audioAttributes, false)
             seekTo(currentWindow, 1)
             playbackParameters = playbackParams
         }
@@ -145,7 +146,6 @@ class PlayerActivity : AppCompatActivity() {
                         setDescription(mediaArtistList[windowIndex])
                     }.build()
                 }
-                return MediaDescriptionCompat.Builder().build()
             }
         }
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)

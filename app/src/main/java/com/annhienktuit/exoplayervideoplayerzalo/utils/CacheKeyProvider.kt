@@ -9,10 +9,11 @@ class CacheKeyProvider: CacheKeyFactory {
     constructor(id: String){
         this.id = id
     }
+
     override fun buildCacheKey(dataSpec: DataSpec): String? {
         //val key = generateKey(dataSpec.uri.toString())
-        val key = id
-        Log.i("buildKey: ",key)
+        val key = this.id
+        Log.i("CacheKeyProvider: ","$key is the key of ${dataSpec.uri}")
         return key
     }
 

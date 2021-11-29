@@ -37,7 +37,7 @@
             android:layout_marginTop="16dp"/>
 
         <TextView
-            android:id="@+id/media_url"
+            android:id="@+id/media_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toRightOf="@id/media_thumbnail"

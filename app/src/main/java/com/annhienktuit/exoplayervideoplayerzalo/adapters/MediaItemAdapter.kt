@@ -22,10 +22,10 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.tag = mediaList[position]
         var song = mediaList[position]
+        holder.itemView.tag = mediaList[position]
         holder.mediaTitle.text = song.songName
-        holder.mediaURL.text = song.url
+        holder.mediaArtist.text = song.artist
     }
 
     override fun getItemCount(): Int {
@@ -33,7 +33,7 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
     }
 
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView){
-        var mediaURL: TextView
+        var mediaArtist: TextView
         var mediaTitle:TextView
         var arrayURL = ArrayList<String>()
         var arrayTitle= ArrayList<String>()
@@ -41,7 +41,7 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         var arrayID = ArrayList<String>()
         init {
             mediaTitle = itemView.findViewById(R.id.media_title)
-            mediaURL = itemView.findViewById(R.id.media_url)
+            mediaArtist = itemView.findViewById(R.id.media_artist)
             for(media in mediaList){
                 arrayID.add(media.id)
                 arrayURL.add(media.url)

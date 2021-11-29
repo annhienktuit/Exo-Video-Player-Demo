@@ -17,7 +17,7 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) : MediaD
         controller.sessionActivity
 
     override fun getCurrentContentText(player: Player): String? {
-        return "Demo ExoPlayer"
+        return null
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {

@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.Request
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.Volley
+import com.android.volley.*
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.MediaItemAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
-import com.android.volley.VolleyError
+import com.android.volley.toolbox.*
 
 import org.json.JSONException
 
@@ -19,14 +16,16 @@ import org.json.JSONObject
 
 import org.json.JSONArray
 
-import com.android.volley.toolbox.JsonArrayRequest
+import com.annhienktuit.exoplayervideoplayerzalo.models.Constants
+import java.net.CacheRequest
+import com.android.volley.toolbox.HttpHeaderParser
 
-
-
+import com.android.volley.NetworkResponse
 
 class MediaSelectActivity : AppCompatActivity() {
-    var requestURL = "https://61a03c9da6470200176132f7.mockapi.io/api/v1/Song"
+    var requestURL = Constants.requestURL
     lateinit var queue:RequestQueue
+    lateinit var requestQueue:RequestQueue
     private lateinit var rcvMediaList: RecyclerView
     private var layoutManager: RecyclerView.LayoutManager? = null
     private var adapter: RecyclerView.Adapter<MediaItemAdapter.ViewHolder>? = null
@@ -35,8 +34,13 @@ class MediaSelectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_select)
         songList = ArrayList()
+        val cache = DiskBasedCache(cacheDir, 1024*1024)
+        val network =  BasicNetwork(HurlStack())
+        requestQueue = RequestQueue(cache, network).apply {
+            start()
+        }
         queue = Volley.newRequestQueue(this)
-        rcvMediaList = findViewById<RecyclerView>(R.id.rcvMediaList)
+        rcvMediaList = findViewById(R.id.rcvMediaList)
         layoutManager = LinearLayoutManager(this)
         rcvMediaList.layoutManager = layoutManager
         sendRequest()
@@ -49,7 +53,8 @@ class MediaSelectActivity : AppCompatActivity() {
                 for (i in 0 until response.length()) {
                     try {
                         val jsonObject = response.getJSONObject(i)
-                        var song: Song = Song(jsonObject.getString("id"),
+                        var song = Song(
+                            jsonObject.getString("id"),
                             jsonObject.getString("url"),
                             jsonObject.getString("song_name"),
                             jsonObject.getString("artist")
@@ -62,7 +67,10 @@ class MediaSelectActivity : AppCompatActivity() {
                 adapter = MediaItemAdapter(this, songList)
                 rcvMediaList.adapter = adapter
             }
-        ) { error -> Log.i("Volley Error: ", error.toString()) }
-        queue.add(jsonArrayRequest)
+        ) { error -> Log.e("Volley Error: ", error.toString()) }
+        jsonArrayRequest.setShouldCache(true)
+        jsonArrayRequest.headers
+        requestQueue.add(jsonArrayRequest)
+        requestQueue.cache.get(requestURL)
     }
 }
