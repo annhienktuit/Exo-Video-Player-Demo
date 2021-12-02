@@ -76,6 +76,6 @@ class MediaSelectActivity : AppCompatActivity() {
         jsonArrayRequest.setShouldCache(true)
         jsonArrayRequest.headers
         requestQueue.add(jsonArrayRequest)
-        requestQueue.cache.get(requestURL)
+
     }
 }

@@ -23,14 +23,16 @@
         <!-- Video surface will be inserted as the first child of the content frame. -->
 
         <View android:id="@id/exo_shutter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/black"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"/>
 
-        <com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView android:id="@id/exo_artwork"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"/>
+        <com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
+            android:id="@id/exo_artwork"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:scaleType="fitXY" />
 
         <com.google.android.exoplayer2.ui.SubtitleView android:id="@id/exo_subtitles"
             android:layout_width="match_parent"

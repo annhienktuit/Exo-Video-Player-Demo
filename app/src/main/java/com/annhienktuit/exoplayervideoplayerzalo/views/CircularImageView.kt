@@ -27,6 +27,10 @@ class CircularImageView : ImageView {
         super.onDraw(canvas)
     }
 
+    override fun setRotation(rotation: Float) {
+        super.setRotation(rotation)
+    }
+
     companion object {
         var radius = 1000f
     }

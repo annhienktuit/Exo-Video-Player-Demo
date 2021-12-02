@@ -38,9 +38,11 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.util.Log
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
+import com.annhienktuit.exoplayervideoplayerzalo.animations.RotateAnimation
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheParams
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.md5
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
+import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
@@ -59,6 +61,8 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var btnMute: Button
     private lateinit var btnFilePicker: Button
     private lateinit var btnSpeed: Button
+    private lateinit var imgArtwork:CircularImageView
+    private lateinit var rotateAnimation: RotateAnimation
     private var urlMedia:String = ""
     private lateinit var mediaTitleList: ArrayList<String>
     private lateinit var mediaURLList: ArrayList<String>
@@ -135,6 +139,7 @@ class PlayerActivity : AppCompatActivity() {
         exoPlayer.playWhenReady = true
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
+        rotateAnimation.startAnimation()
     }
 
     private fun initializeNotification(){
@@ -269,6 +274,8 @@ class PlayerActivity : AppCompatActivity() {
         btnMute = findViewById(R.id.exo_mute)
         btnFilePicker = findViewById(R.id.exo_file_picker)
         btnSpeed = findViewById(R.id.exo_playback_speed)
+        imgArtwork = findViewById(R.id.exo_artwork)
+        rotateAnimation = RotateAnimation(imgArtwork)
     }
     companion object {
         const val MEDIA_SESSION_TAG = "media_session"
