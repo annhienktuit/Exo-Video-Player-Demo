@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo
+package com.annhienktuit.exoplayervideoplayerzalo.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,18 +9,11 @@ import com.android.volley.*
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.MediaItemAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
 import com.android.volley.toolbox.*
+import com.annhienktuit.exoplayervideoplayerzalo.R
 
 import org.json.JSONException
 
-import org.json.JSONObject
-
-import org.json.JSONArray
-
-import com.annhienktuit.exoplayervideoplayerzalo.models.Constants
-import java.net.CacheRequest
-import com.android.volley.toolbox.HttpHeaderParser
-
-import com.android.volley.NetworkResponse
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Constants
 
 class MediaSelectActivity : AppCompatActivity() {
     var requestURL = Constants.requestURL

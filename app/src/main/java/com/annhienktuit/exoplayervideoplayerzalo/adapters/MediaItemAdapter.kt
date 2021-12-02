@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.annhienktuit.exoplayervideoplayerzalo.PlayerActivity
+import com.annhienktuit.exoplayervideoplayerzalo.activities.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
 

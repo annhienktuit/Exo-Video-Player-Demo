@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo
+package com.annhienktuit.exoplayervideoplayerzalo.activities
 
 import android.app.NotificationManager
 import android.content.pm.ActivityInfo
@@ -33,9 +33,9 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
+import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheParams
-import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.splitSongName
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory

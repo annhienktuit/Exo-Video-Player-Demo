@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo
+package com.annhienktuit.exoplayervideoplayerzalo.activities
 
 import android.content.Intent
 import android.graphics.Color
@@ -9,6 +9,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
+import com.annhienktuit.exoplayervideoplayerzalo.R
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

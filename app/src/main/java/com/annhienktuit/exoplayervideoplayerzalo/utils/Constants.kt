@@ -1,4 +1,4 @@
-package com.annhienktuit.exoplayervideoplayerzalo.models
+package com.annhienktuit.exoplayervideoplayerzalo.utils
 
 public class Constants {
     companion object {

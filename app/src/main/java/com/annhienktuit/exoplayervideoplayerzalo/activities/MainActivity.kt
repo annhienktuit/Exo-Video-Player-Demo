@@ -1,4 +1,4 @@
-//package com.annhienktuit.exoplayervideoplayerzalo
+package com.annhienktuit.exoplayervideoplayerzalo.activities//package com.annhienktuit.exoplayervideoplayerzalo
 //
 //
 //import android.content.Intent

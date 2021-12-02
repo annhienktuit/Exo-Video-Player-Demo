@@ -20,13 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ExoPlayerVideoPlayerZalo">
         <activity
-            android:name=".PlayerActivity"
+            android:name=".activities.PlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".MediaSelectActivity"
+            android:name=".activities.MediaSelectActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
