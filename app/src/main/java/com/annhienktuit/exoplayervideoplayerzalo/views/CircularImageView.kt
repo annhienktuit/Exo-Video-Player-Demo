@@ -17,8 +17,7 @@ class CircularImageView : ImageView {
         context,
         attrs,
         defStyleAttr
-    ) {
-    }
+    )
 
     override fun onDraw(canvas: Canvas) {
         val rectF = RectF(0F, 0F, width.toFloat(), height.toFloat())
@@ -26,10 +25,6 @@ class CircularImageView : ImageView {
         path.addRoundRect(rectF, radius, radius, Path.Direction.CW)
         canvas.clipPath(path)
         super.onDraw(canvas)
-    }
-
-    override fun setRotation(rotation: Float) {
-        super.setRotation(rotation)
     }
 
     companion object {

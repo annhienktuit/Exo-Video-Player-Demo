@@ -7,10 +7,40 @@
     android:background="@color/white"
     tools:context=".activities.MediaSelectActivity">
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+
+        <include layout="@layout/shrimmer_media_item_view" />
+        </LinearLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvMediaList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:padding="8dp"
+        android:visibility="gone"/>
 
 </RelativeLayout>

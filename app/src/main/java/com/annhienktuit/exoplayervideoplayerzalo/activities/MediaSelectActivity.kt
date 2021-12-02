@@ -3,6 +3,7 @@ package com.annhienktuit.exoplayervideoplayerzalo.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.*
@@ -14,12 +15,14 @@ import com.annhienktuit.exoplayervideoplayerzalo.R
 import org.json.JSONException
 
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Constants
+import com.facebook.shimmer.ShimmerFrameLayout
 
 class MediaSelectActivity : AppCompatActivity() {
     var requestURL = Constants.requestURL
     lateinit var queue:RequestQueue
     lateinit var requestQueue:RequestQueue
     private lateinit var rcvMediaList: RecyclerView
+    private lateinit var shimmerFrameLayout:ShimmerFrameLayout
     private var layoutManager: RecyclerView.LayoutManager? = null
     private var adapter: RecyclerView.Adapter<MediaItemAdapter.ViewHolder>? = null
     lateinit var songList:ArrayList<Song>
@@ -34,9 +37,15 @@ class MediaSelectActivity : AppCompatActivity() {
         }
         queue = Volley.newRequestQueue(this)
         rcvMediaList = findViewById(R.id.rcvMediaList)
+        shimmerFrameLayout = findViewById(R.id.shimmerFrameLayout)
         layoutManager = LinearLayoutManager(this)
         rcvMediaList.layoutManager = layoutManager
         sendRequest()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        shimmerFrameLayout.startShimmer()
     }
 
     private fun sendRequest() {
@@ -59,6 +68,8 @@ class MediaSelectActivity : AppCompatActivity() {
                 }
                 adapter = MediaItemAdapter(this, songList)
                 rcvMediaList.adapter = adapter
+                shimmerFrameLayout.visibility = View.GONE
+                rcvMediaList.visibility = View.VISIBLE
             }
         ) { error -> Log.e("Volley Error: ", error.toString()) }
         jsonArrayRequest.setShouldCache(true)
