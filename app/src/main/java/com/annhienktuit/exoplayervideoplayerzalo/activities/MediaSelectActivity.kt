@@ -30,11 +30,6 @@ class MediaSelectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_media_select)
         songList = ArrayList()
-        val cache = DiskBasedCache(cacheDir, 1024*1024)
-        val network =  BasicNetwork(HurlStack())
-        requestQueue = RequestQueue(cache, network).apply {
-            start()
-        }
         queue = Volley.newRequestQueue(this)
         rcvMediaList = findViewById(R.id.rcvMediaList)
         shimmerFrameLayout = findViewById(R.id.shimmerFrameLayout)
@@ -73,9 +68,7 @@ class MediaSelectActivity : AppCompatActivity() {
                 rcvMediaList.visibility = View.VISIBLE
             }
         ) { error -> Log.e("Volley Error: ", error.toString()) }
-        jsonArrayRequest.setShouldCache(true)
-        jsonArrayRequest.headers
-        requestQueue.add(jsonArrayRequest)
+        queue.add(jsonArrayRequest)
 
     }
 }
