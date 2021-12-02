@@ -27,7 +27,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/black"/>
 
-        <ImageView android:id="@id/exo_artwork"
+        <com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView android:id="@id/exo_artwork"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"/>

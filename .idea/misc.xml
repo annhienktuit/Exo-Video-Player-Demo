@@ -10,11 +10,17 @@
         <entry key="..\:/NMUDDD_Exercises/ExoPlayerVideoPlayerZalo/app/src/main/res/layout/activity_splash.xml" value="0.25" />
         <entry key="..\:/NMUDDD_Exercises/ExoPlayerVideoPlayerZalo/app/src/main/res/layout/exo_styled_player_view.xml" value="0.25" />
         <entry key="..\:/NMUDDD_Exercises/ExoPlayerVideoPlayerZalo/app/src/main/res/layout/media_item_view.xml" value="0.25" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/artwork_circular.xml" value="0.1421875" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/circular.xml" value="0.1421875" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/corner_radius.xml" value="0.1421875" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/activity_media_select.xml" value="0.25416666666666665" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_player_control_view.xml" value="0.16" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_player_view.xml" value="0.25416666666666665" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/media_item_view.xml" value="0.264" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

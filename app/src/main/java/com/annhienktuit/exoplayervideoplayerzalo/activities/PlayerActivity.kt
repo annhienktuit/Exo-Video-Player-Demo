@@ -30,9 +30,12 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 
 import android.app.NotificationChannel
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
+import android.util.Log
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheParams
@@ -189,7 +192,6 @@ class PlayerActivity : AppCompatActivity() {
                     Uri.parse(mediaURLList[i]), cacheDataSourceFactory,
                     DefaultExtractorsFactory(),null,null,mediaIDList[i]))
         }
-
         val concatenatingMediaSource = ConcatenatingMediaSource()
         concatenatingMediaSource.addMediaSources(mediaSourceList)
         return concatenatingMediaSource
