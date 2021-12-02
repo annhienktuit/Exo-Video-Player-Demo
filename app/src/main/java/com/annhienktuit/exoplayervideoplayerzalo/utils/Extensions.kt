@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
+import java.math.BigInteger
+import java.security.MessageDigest
 
 
 object Extensions {
@@ -87,4 +89,10 @@ object Extensions {
         println(result)
         return result
     }
+
+    fun md5(input:String): String {
+        val md = MessageDigest.getInstance("MD5")
+        return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
+    }
+
 }

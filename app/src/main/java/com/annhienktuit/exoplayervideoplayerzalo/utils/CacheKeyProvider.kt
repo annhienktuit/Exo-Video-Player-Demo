@@ -1,6 +1,7 @@
 package com.annhienktuit.exoplayervideoplayerzalo.utils
 
 import android.util.Log
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.md5
 import com.google.android.exoplayer2.upstream.cache.CacheKeyFactory
 import com.google.android.exoplayer2.upstream.DataSpec
 
@@ -14,7 +15,7 @@ class CacheKeyProvider: CacheKeyFactory {
         //val key = generateKey(dataSpec.uri.toString())
         val key = this.id
         Log.i("CacheKeyProvider: ","$key is the key of ${dataSpec.uri}")
-        return key
+        return md5(key!!)
     }
 
     private fun generateKey(url: String): String? {

@@ -39,11 +39,15 @@ import android.util.Log
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheParams
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.md5
 import com.annhienktuit.exoplayervideoplayerzalo.utils.PreLoadingCache
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
+import java.io.UnsupportedEncodingException
+import java.math.BigInteger
+import java.security.MessageDigest
 
 
 class PlayerActivity : AppCompatActivity() {
@@ -190,7 +194,7 @@ class PlayerActivity : AppCompatActivity() {
             mediaSourceList.add(
                 ExtractorMediaSource(
                     Uri.parse(mediaURLList[i]), cacheDataSourceFactory,
-                    DefaultExtractorsFactory(),null,null,mediaIDList[i]))
+                    DefaultExtractorsFactory(),null,null,md5(mediaIDList[i])))
         }
         val concatenatingMediaSource = ConcatenatingMediaSource()
         concatenatingMediaSource.addMediaSources(mediaSourceList)
