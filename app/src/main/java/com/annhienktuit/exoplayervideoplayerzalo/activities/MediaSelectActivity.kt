@@ -38,6 +38,7 @@ class MediaSelectActivity : AppCompatActivity() {
         queue = Volley.newRequestQueue(this)
         rcvMediaList = findViewById(R.id.rcvMediaList)
         shimmerFrameLayout = findViewById(R.id.shimmerFrameLayout)
+        shimmerFrameLayout.startShimmer()
         layoutManager = LinearLayoutManager(this)
         rcvMediaList.layoutManager = layoutManager
         sendRequest()
@@ -68,7 +69,7 @@ class MediaSelectActivity : AppCompatActivity() {
                 }
                 adapter = MediaItemAdapter(this, songList)
                 rcvMediaList.adapter = adapter
-                shimmerFrameLayout.visibility = View.GONE
+                shimmerFrameLayout.visibility = View.INVISIBLE
                 rcvMediaList.visibility = View.VISIBLE
             }
         ) { error -> Log.e("Volley Error: ", error.toString()) }
