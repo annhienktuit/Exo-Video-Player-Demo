@@ -13,9 +13,12 @@
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/artwork_circular.xml" value="0.1421875" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/circular.xml" value="0.1421875" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/corner_radius.xml" value="0.1421875" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/drawable/ic_previous.xml" value="0.2703125" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/activity_media_select.xml" value="0.25416666666666665" />
-        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_player_control_view.xml" value="0.16" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/activity_player.xml" value="0.25416666666666665" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_player_control_view.xml" value="0.264" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_player_view.xml" value="0.25416666666666665" />
+        <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/exo_styled_player_view.xml" value="0.25416666666666665" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/media_item_view.xml" value="0.264" />
         <entry key="..\:/VNG/Exo-Video-Player-Demo-zalo/app/src/main/res/layout/shrimmer_media_item_view.xml" value="0.25416666666666665" />
       </map>

@@ -14,6 +14,8 @@ import com.annhienktuit.exoplayervideoplayerzalo.activities.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
 import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import wseemann.media.FFmpegMediaMetadataRetriever
 
 class MediaItemAdapter(context: Context, songList: List<Song>) :
@@ -34,8 +36,10 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         val retriever = FFmpegMediaMetadataRetriever()
         retriever.setDataSource(mediaList[position].url)
         val artwork = retriever.embeddedPicture //byteArray
-        val bitmap = BitmapFactory.decodeByteArray(artwork,0,artwork.size)
-        holder.mediaArt.setImageBitmap(Bitmap.createScaledBitmap(bitmap,200,200, false))
+        Glide.with(mContext).load(artwork).diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.mediaArt)
+        retriever.release()
+//        val bitmap = BitmapFactory.decodeByteArray(artwork,0,artwork.size)
+//        holder.mediaArt.setImageBitmap(Bitmap.createScaledBitmap(bitmap,200,200, false))
     }
 
     override fun getItemCount(): Int {

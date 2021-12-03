@@ -56,10 +56,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var playerView: PlayerView
     private lateinit var tvPosition: TextView
-    private lateinit var btnQuality: Button
-    private lateinit var btnFullScr: Button
     private lateinit var btnMute: Button
-    private lateinit var btnFilePicker: Button
     private lateinit var btnSpeed: Button
     private lateinit var imgArtwork:CircularImageView
     private lateinit var rotateAnimation: RotateAnimation
@@ -106,19 +103,16 @@ class PlayerActivity : AppCompatActivity() {
         initializeNotification()
         createNotificationChannel()
         tvPosition.text = "00:00"
-        btnQuality.visibility = View.GONE
-        btnFilePicker.visibility = View.GONE
-        btnFullScr.setOnClickListener { rotateScreen() }
         btnSpeed.setOnClickListener { changeSpeed() }
         btnMute.setOnClickListener {
             currentVolume = exoPlayer.volume
             if (currentVolume == 0f) {
                 exoPlayer.volume = 1f
-                btnMute.setBackgroundResource(R.drawable.ic_mute)
+                btnMute.setBackgroundResource(R.drawable.ic_unmute)
             }
             else {
                 exoPlayer.volume = 0f
-                btnMute.setBackgroundResource(R.drawable.ic_unmute)
+                btnMute.setBackgroundResource(R.drawable.ic_mute)
             }
         }
     }
@@ -139,7 +133,21 @@ class PlayerActivity : AppCompatActivity() {
         exoPlayer.playWhenReady = true
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
-        rotateAnimation.startAnimation()
+        addListener()
+    }
+
+    private fun addListener() {
+        exoPlayer.addListener(object : Player.EventListener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean,playbackState: Int) {
+                if (playWhenReady && playbackState == Player.STATE_READY) {
+                    rotateAnimation.startAnimation()
+                } else if (playWhenReady) {
+                    rotateAnimation.stopAnimation()
+                } else {
+                    rotateAnimation.stopAnimation()
+                }
+            }
+        })
     }
 
     private fun initializeNotification(){
@@ -225,20 +233,6 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun rotateScreen(){
-        if(isLandscapeOrientation()){
-            playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen)
-        }
-        else {
-            playerView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FILL
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            btnFullScr.setBackgroundResource(R.drawable.ic_fullscreen_skrink)
-            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        }
-    }
-
     private fun changeSpeed() {
         if(playbackParams.speed == 1f){
             playbackParams = PlaybackParameters(2f)
@@ -269,10 +263,7 @@ class PlayerActivity : AppCompatActivity() {
     private fun bindView() {
         playerView = findViewById(R.id.player_view)
         tvPosition = findViewById(R.id.exo_position)
-        btnQuality = findViewById(R.id.exo_quality_icon)
-        btnFullScr = findViewById(R.id.exo_fullscreen_icon)
         btnMute = findViewById(R.id.exo_mute)
-        btnFilePicker = findViewById(R.id.exo_file_picker)
         btnSpeed = findViewById(R.id.exo_playback_speed)
         imgArtwork = findViewById(R.id.exo_artwork)
         rotateAnimation = RotateAnimation(imgArtwork)
