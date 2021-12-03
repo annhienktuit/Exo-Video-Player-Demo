@@ -55,6 +55,10 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.Animation
 
 import android.animation.ObjectAnimator
+import android.content.ContentResolver
+import android.media.MediaMetadata
+import android.support.v4.media.MediaMetadataCompat
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -77,7 +81,7 @@ class PlayerActivity : AppCompatActivity() {
     var currentVolume = 0F
     var currentWindow = 0
     private var playbackParams = PlaybackParameters(1f)
-    private val audioAttributes = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.CONTENT_TYPE_MOVIE).build()
+    private val audioAttribute = AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.CONTENT_TYPE_MUSIC).build()
     private var trackSelector:DefaultTrackSelector = DefaultTrackSelector()
     private var trackParams: DefaultTrackSelector.Parameters = trackSelector.buildUponParameters().build()
     private lateinit var mediaDataSourceFactory: DataSource.Factory
@@ -136,7 +140,7 @@ class PlayerActivity : AppCompatActivity() {
         exoPlayer.playbackParameters = playbackParams
         exoPlayer.apply {
             prepare(mediaSourceList)
-            setAudioAttributes(audioAttributes, false)
+            setAudioAttributes(audioAttribute, false)
             seekTo(currentWindow, 1)
             playbackParameters = playbackParams
         }
@@ -171,8 +175,24 @@ class PlayerActivity : AppCompatActivity() {
                 tvSongName.text = mediaTitleList[exoPlayer.currentWindowIndex]
                 tvArtist.text = mediaArtistList[exoPlayer.currentWindowIndex]
             }
+            //TODO: extract to get from metadata
+//            override fun onTracksChanged(
+//                trackGroups: TrackGroupArray?,
+//                trackSelections: TrackSelectionArray?
+//            ) {
+//                super.onTracksChanged(trackGroups, trackSelections)
+//                for(idx in 0 until trackGroups?.length!!){
+//                    val trackGroup = trackGroups.get(idx)
+//                    for(j in 0 until trackGroup.length){
+//                        val trackMetaData = trackGroup.getFormat(j).metadata
+//                        if(trackMetaData != null) Log.i("metaData: ",trackMetaData.get(0).toString())
+//                        tvSongName.text = trackMetaData?.get(0).toString()
+//                    }
+//                }
+//            }
 
         })
+
 
 
     }
@@ -201,6 +221,7 @@ class PlayerActivity : AppCompatActivity() {
         playerNotificationManager.apply {
             setMediaSessionToken(mediaSession.sessionToken)
             setPlayer(exoPlayer)
+            setSmallIcon(R.drawable.ic_noti_logo)
         }
     }
 

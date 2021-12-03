@@ -38,8 +38,6 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         val artwork = retriever.embeddedPicture //byteArray
         Glide.with(mContext).load(artwork).diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.mediaArt)
         retriever.release()
-//        val bitmap = BitmapFactory.decodeByteArray(artwork,0,artwork.size)
-//        holder.mediaArt.setImageBitmap(Bitmap.createScaledBitmap(bitmap,200,200, false))
     }
 
     override fun getItemCount(): Int {
