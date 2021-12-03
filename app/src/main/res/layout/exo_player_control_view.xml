@@ -64,8 +64,8 @@
 
         <Button
             android:id="@+id/exo_playback_speed"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_margin="10dp"
             android:layout_alignParentLeft="true"
             android:background="@drawable/ic_fast"
@@ -102,8 +102,8 @@
 
         <Button
             android:id="@+id/exo_mute"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_margin="10dp"
             android:background="@drawable/ic_unmute"
             android:scaleType="fitCenter"/>

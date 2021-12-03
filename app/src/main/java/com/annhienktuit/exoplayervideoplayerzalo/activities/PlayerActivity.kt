@@ -50,12 +50,20 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import java.io.UnsupportedEncodingException
 import java.math.BigInteger
 import java.security.MessageDigest
+import android.view.animation.LinearInterpolator
 
+import android.view.animation.Animation
+
+import android.animation.ObjectAnimator
+import java.util.*
+import kotlin.collections.ArrayList
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var exoPlayer:SimpleExoPlayer
     private lateinit var playerView: PlayerView
     private lateinit var tvPosition: TextView
+    private lateinit var tvSongName: TextView
+    private lateinit var tvArtist: TextView
     private lateinit var btnMute: Button
     private lateinit var btnSpeed: Button
     private lateinit var imgArtwork:CircularImageView
@@ -81,7 +89,7 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaController: MediaControllerCompat
     private lateinit var loadControl:LoadControl
     private val simpleCache: SimpleCache = CacheUtils.simpleCache
-    private lateinit var mediaMetadataRetriever: MediaMetadataRetriever
+    private lateinit var anim: ObjectAnimator
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
@@ -103,6 +111,8 @@ class PlayerActivity : AppCompatActivity() {
         initializeNotification()
         createNotificationChannel()
         tvPosition.text = "00:00"
+        tvSongName.text = mediaTitleList[currentWindow]
+        tvArtist.text = mediaArtistList[currentWindow]
         btnSpeed.setOnClickListener { changeSpeed() }
         btnMute.setOnClickListener {
             currentVolume = exoPlayer.volume
@@ -133,21 +143,38 @@ class PlayerActivity : AppCompatActivity() {
         exoPlayer.playWhenReady = true
         playerView.player = exoPlayer
         playerView.keepScreenOn = true
+        initializeAnimation()
         addListener()
+    }
+
+    private fun initializeAnimation(){
+        anim= ObjectAnimator.ofFloat<View>(imgArtwork, View.ROTATION, 0f, 360f).setDuration(20000)
+        anim.repeatCount = Animation.INFINITE
+        anim.interpolator = LinearInterpolator()
+        anim.start()
     }
 
     private fun addListener() {
         exoPlayer.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean,playbackState: Int) {
                 if (playWhenReady && playbackState == Player.STATE_READY) {
-                    rotateAnimation.startAnimation()
+                    anim.resume()
                 } else if (playWhenReady) {
-                    rotateAnimation.stopAnimation()
+                    anim.pause()
                 } else {
-                    rotateAnimation.stopAnimation()
+                    anim.pause()
                 }
             }
+
+            override fun onPositionDiscontinuity(reason: Int) {
+                super.onPositionDiscontinuity(reason)
+                tvSongName.text = mediaTitleList[exoPlayer.currentWindowIndex]
+                tvArtist.text = mediaArtistList[exoPlayer.currentWindowIndex]
+            }
+
         })
+
+
     }
 
     private fun initializeNotification(){
@@ -267,6 +294,8 @@ class PlayerActivity : AppCompatActivity() {
         btnSpeed = findViewById(R.id.exo_playback_speed)
         imgArtwork = findViewById(R.id.exo_artwork)
         rotateAnimation = RotateAnimation(imgArtwork)
+        tvArtist = findViewById(R.id.tvSongArtist)
+        tvSongName = findViewById(R.id.tvSongTitle)
     }
     companion object {
         const val MEDIA_SESSION_TAG = "media_session"

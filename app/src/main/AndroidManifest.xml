@@ -22,6 +22,7 @@
         android:theme="@style/Theme.ExoPlayerVideoPlayerZalo">
         <activity
             android:name=".activities.PlayerActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".activities.MediaSelectActivity"
