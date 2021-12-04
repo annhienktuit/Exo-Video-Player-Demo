@@ -2,6 +2,7 @@ package com.annhienktuit.exoplayervideoplayerzalo.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,13 +63,21 @@ class MediaSelectActivity : AppCompatActivity() {
                         e.printStackTrace()
                     }
                 }
-                adapter = MediaItemAdapter(this, songList)
-                rcvMediaList.adapter = adapter
-                shimmerFrameLayout.visibility = View.INVISIBLE
-                rcvMediaList.visibility = View.VISIBLE
+                connectAdapter()
+                handleShimmerAnimation()
             }
         ) { error -> Log.e("Volley Error: ", error.toString()) }
         queue.add(jsonArrayRequest)
-
     }
+
+    private fun connectAdapter(){
+        adapter = MediaItemAdapter(this, songList)
+        rcvMediaList.adapter = adapter
+    }
+
+    private fun handleShimmerAnimation(){
+        shimmerFrameLayout.visibility = View.INVISIBLE
+        rcvMediaList.visibility = View.VISIBLE
+    }
+
 }

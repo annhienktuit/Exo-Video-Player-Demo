@@ -217,7 +217,7 @@ class PlayerActivity : AppCompatActivity() {
         }
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
         mediaSessionConnector.setPlayer(exoPlayer, null)
-        playerNotificationManager = PlayerNotificationManager(this, channelID, notificationID,  DescriptionAdapter(mediaController))
+        playerNotificationManager = PlayerNotificationManager(this, channelID, notificationID,  DescriptionAdapter(this,mediaController))
         playerNotificationManager.apply {
             setMediaSessionToken(mediaSession.sessionToken)
             setPlayer(exoPlayer)

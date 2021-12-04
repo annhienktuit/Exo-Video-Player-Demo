@@ -1,18 +1,21 @@
 package com.annhienktuit.exoplayervideoplayerzalo.adapters
 
 import android.app.PendingIntent
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.support.v4.media.session.MediaControllerCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
+import android.graphics.drawable.BitmapDrawable
 
-class DescriptionAdapter(private val controller: MediaControllerCompat) : MediaDescriptionAdapter {
+import androidx.annotation.DrawableRes
+import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getBitmapFromResource
+
+
+class DescriptionAdapter(val context:Context, private val controller: MediaControllerCompat) : MediaDescriptionAdapter {
+    private var mContext:Context = context
     override fun getCurrentContentTitle(player: Player): String {
         val window = player.currentWindowIndex
         return window.toString()
@@ -26,7 +29,7 @@ class DescriptionAdapter(private val controller: MediaControllerCompat) : MediaD
     }
 
     override fun getCurrentLargeIcon(player: Player, callback: BitmapCallback): Bitmap? {
-        return null
+        return getBitmapFromResource(mContext, R.drawable.logo)
     }
 
 }

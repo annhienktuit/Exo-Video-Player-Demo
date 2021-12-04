@@ -2,12 +2,16 @@ package com.annhienktuit.exoplayervideoplayerzalo.utils
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
@@ -94,5 +98,10 @@ object Extensions {
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(input.toByteArray())).toString(16).padStart(32, '0')
     }
+
+    fun getBitmapFromResource(context: Context, @DrawableRes bitmapResource: Int): Bitmap? {
+        return (context.resources.getDrawable(bitmapResource) as BitmapDrawable).bitmap
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package com.annhienktuit.exoplayervideoplayerzalo.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
@@ -21,6 +22,7 @@ class CacheParams {
     }
 }
 
+@SuppressLint("StaticFieldLeak")
 class PreLoadingCache(): AsyncTask<CacheParams, Void, Void>() {
     var uri: String? = null
     var id: String? = null

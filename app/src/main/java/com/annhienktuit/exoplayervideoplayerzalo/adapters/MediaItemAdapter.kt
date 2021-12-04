@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.annhienktuit.exoplayervideoplayerzalo.activities.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
+import com.annhienktuit.exoplayervideoplayerzalo.utils.RetrieveAlbumArt
+import com.annhienktuit.exoplayervideoplayerzalo.utils.RetrieveAlbumArtParams
 import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -22,7 +24,6 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
     RecyclerView.Adapter<MediaItemAdapter.ViewHolder>() {
     private var mContext:Context = context
     private var mediaList:List<Song> = songList
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.media_item_view,parent,false)
         return ViewHolder(view)
@@ -33,11 +34,10 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         holder.itemView.tag = mediaList[position]
         holder.mediaTitle.text = song.songName
         holder.mediaArtist.text = song.artist
-        val retriever = FFmpegMediaMetadataRetriever()
-        retriever.setDataSource(mediaList[position].url)
-        val artwork = retriever.embeddedPicture //byteArray
-        Glide.with(mContext).load(artwork).diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.mediaArt)
-        retriever.release()
+        val retriever = RetrieveAlbumArt()
+        val params = RetrieveAlbumArtParams(mContext, mediaList[position].url, holder.mediaArt)
+        val artwork = retriever.execute(params)
+
     }
 
     override fun getItemCount(): Int {
