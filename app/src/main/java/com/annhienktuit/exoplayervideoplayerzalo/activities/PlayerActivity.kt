@@ -1,14 +1,12 @@
 package com.annhienktuit.exoplayervideoplayerzalo.activities
 
 import android.app.NotificationManager
-import android.content.pm.ActivityInfo
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.WindowCompat
@@ -16,13 +14,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.annhienktuit.exoplayervideoplayerzalo.utils.CacheUtils
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.checkPermissions
-import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.isLandscapeOrientation
 import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.toast
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.*
@@ -30,12 +26,8 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 
 import android.app.NotificationChannel
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.support.v4.media.MediaDescriptionCompat
-import android.util.Log
 import com.annhienktuit.exoplayervideoplayerzalo.R
 import com.annhienktuit.exoplayervideoplayerzalo.adapters.DescriptionAdapter
 import com.annhienktuit.exoplayervideoplayerzalo.animations.RotateAnimation
@@ -47,19 +39,14 @@ import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
-import java.io.UnsupportedEncodingException
-import java.math.BigInteger
-import java.security.MessageDigest
 import android.view.animation.LinearInterpolator
 
 import android.view.animation.Animation
 
 import android.animation.ObjectAnimator
-import android.content.ContentResolver
-import android.media.MediaMetadata
-import android.support.v4.media.MediaMetadataCompat
+import com.google.android.exoplayer2.metadata.Metadata
+import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import java.util.*
 import kotlin.collections.ArrayList
 
 class PlayerActivity : AppCompatActivity() {
@@ -176,25 +163,34 @@ class PlayerActivity : AppCompatActivity() {
                 tvArtist.text = mediaArtistList[exoPlayer.currentWindowIndex]
             }
             //TODO: extract to get from metadata
-//            override fun onTracksChanged(
-//                trackGroups: TrackGroupArray?,
-//                trackSelections: TrackSelectionArray?
-//            ) {
-//                super.onTracksChanged(trackGroups, trackSelections)
-//                for(idx in 0 until trackGroups?.length!!){
-//                    val trackGroup = trackGroups.get(idx)
-//                    for(j in 0 until trackGroup.length){
-//                        val trackMetaData = trackGroup.getFormat(j).metadata
-//                        if(trackMetaData != null) Log.i("metaData: ",trackMetaData.get(0).toString())
-//                        tvSongName.text = trackMetaData?.get(0).toString()
-//                    }
-//                }
-//            }
+            override fun onTracksChanged(
+                trackGroups: TrackGroupArray?,
+                trackSelections: TrackSelectionArray?
+            ) {
+                super.onTracksChanged(trackGroups, trackSelections)
+                for(idx in 0 until trackGroups?.length!!){
+                    val trackGroup = trackGroups.get(idx)
+                    for(j in 0 until trackGroup.length){
+                        val trackMetaData = trackGroup.getFormat(j).metadata
+                        for(k in 0 until trackMetaData!!.length()){
+                            val artistMetadataEntry = trackMetaData!!.get(j)
+                            if(artistMetadataEntry is TextInformationFrame && artistMetadataEntry.id == "TPE1") {
+                                tvArtist.text = artistMetadataEntry.value
+                                break
+                            }
+                        }
+                        for(k in 0 until trackMetaData!!.length()){
+                            val songNameMetadataEntry = trackMetaData!!.get(j)
+                            if(songNameMetadataEntry is TextInformationFrame && songNameMetadataEntry.id == "TIT2") {
+                                tvSongName.text = songNameMetadataEntry.value
+                                break
+                            }
+                        }
+                    }
+                }
+            }
 
         })
-
-
-
     }
 
     private fun initializeNotification(){

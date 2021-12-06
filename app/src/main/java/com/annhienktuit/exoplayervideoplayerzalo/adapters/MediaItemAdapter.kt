@@ -36,7 +36,7 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
         holder.mediaArtist.text = song.artist
         val retriever = RetrieveAlbumArt()
         val params = RetrieveAlbumArtParams(mContext, mediaList[position].url, holder.mediaArt)
-        val artwork = retriever.execute(params)
+        retriever.execute(params)
 
     }
 

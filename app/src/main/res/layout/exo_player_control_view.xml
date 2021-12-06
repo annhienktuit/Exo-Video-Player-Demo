@@ -38,8 +38,8 @@
             android:layout_marginEnd="7dp"
             android:layout_marginRight="2dp"
             android:layout_weight="1"
-            app:played_color="@color/zmpurple"
-            app:scrubber_color="@color/zmpurple"
+            app:played_color="@color/ggorange"
+            app:scrubber_color="@color/ggorange"
             app:buffered_color="#b0bec5"
             app:unplayed_color="@color/white"/>
 
@@ -75,7 +75,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/zmpurple"
+            android:backgroundTint="@color/ggorange"
             android:background="@drawable/ic_previous"/>
 
         <ImageButton
@@ -83,21 +83,21 @@
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/zmpurple"
+            android:backgroundTint="@color/ggorange"
             android:background="@drawable/ic_play"/>
 
         <ImageButton android:id="@id/exo_pause"
             android:layout_width="54dp"
             android:layout_height="54dp"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/zmpurple"
+            android:backgroundTint="@color/ggorange"
             android:background="@drawable/ic_pause"/>
 
         <ImageButton android:id="@id/exo_next"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_margin="10dp"
-            android:backgroundTint="@color/zmpurple"
+            android:backgroundTint="@color/ggorange"
             android:background="@drawable/ic_next"/>
 
         <Button

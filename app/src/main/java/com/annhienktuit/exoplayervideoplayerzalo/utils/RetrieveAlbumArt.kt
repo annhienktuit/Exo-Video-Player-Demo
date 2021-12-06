@@ -1,7 +1,11 @@
 package com.annhienktuit.exoplayervideoplayerzalo.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.AsyncTask
+import android.util.Base64
 import android.util.Log
 import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
 import com.bumptech.glide.Glide
@@ -23,7 +27,9 @@ class RetrieveAlbumArtParams{
 
 class RetrieveAlbumArt() : AsyncTask<RetrieveAlbumArtParams, Void, ByteArray>() {
     private lateinit var mUrl:String
+    @SuppressLint("StaticFieldLeak")
     private lateinit var mContext: Context
+    @SuppressLint("StaticFieldLeak")
     private lateinit var imageView: CircularImageView
     override fun doInBackground(vararg params: RetrieveAlbumArtParams): ByteArray? {
         try {
@@ -41,7 +47,8 @@ class RetrieveAlbumArt() : AsyncTask<RetrieveAlbumArtParams, Void, ByteArray>() 
 
     override fun onPostExecute(result: ByteArray?) {
         super.onPostExecute(result)
-        Glide.with(mContext).load(result).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView)
+        val bitmap = BitmapFactory.decodeByteArray(result, 0, result!!.size)
+        Glide.with(mContext).asBitmap().load(bitmap).diskCacheStrategy(DiskCacheStrategy.RESOURCE).into(imageView)
     }
 
 }

@@ -33,10 +33,11 @@
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/player_view"
-        android:layout_below="@+id/rlTitle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/rlTitle"
         app:show_buffering="when_playing"
         app:show_shuffle_button="false" />
+
 
 </RelativeLayout>
