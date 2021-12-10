@@ -44,10 +44,26 @@ import android.view.animation.LinearInterpolator
 import android.view.animation.Animation
 
 import android.animation.ObjectAnimator
+import android.graphics.drawable.BitmapDrawable
+import androidx.core.graphics.drawable.toBitmap
 import com.google.android.exoplayer2.metadata.Metadata
 import com.google.android.exoplayer2.metadata.id3.TextInformationFrame
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import kotlin.collections.ArrayList
+import android.graphics.Bitmap
+
+import android.R.string.no
+import android.R.string.no
+import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.util.Log
+import android.view.Window
+import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import com.google.android.exoplayer2.metadata.id3.ApicFrame
+
 
 class PlayerActivity : AppCompatActivity() {
     private lateinit var exoPlayer:SimpleExoPlayer
@@ -65,6 +81,9 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var mediaSourceList:ArrayList<MediaSource>
     private lateinit var mediaArtistList: ArrayList<String>
     private lateinit var mediaIDList: ArrayList<String>
+    private var mediaTitle = ""
+    private var artistTitle= ""
+    private var bitmapData: ByteArray? = null
     var currentVolume = 0F
     var currentWindow = 0
     private var playbackParams = PlaybackParameters(1f)
@@ -99,8 +118,8 @@ class PlayerActivity : AppCompatActivity() {
         }
         bindView()
         initializePlayer()
-        initializeNotification()
         createNotificationChannel()
+        initializeNotification()
         tvPosition.text = "00:00"
         tvSongName.text = mediaTitleList[currentWindow]
         tvArtist.text = mediaArtistList[currentWindow]
@@ -156,12 +175,6 @@ class PlayerActivity : AppCompatActivity() {
                     anim.pause()
                 }
             }
-
-            override fun onPositionDiscontinuity(reason: Int) {
-                super.onPositionDiscontinuity(reason)
-                tvSongName.text = mediaTitleList[exoPlayer.currentWindowIndex]
-                tvArtist.text = mediaArtistList[exoPlayer.currentWindowIndex]
-            }
             //TODO: extract to get from metadata
             override fun onTracksChanged(
                 trackGroups: TrackGroupArray?,
@@ -172,19 +185,30 @@ class PlayerActivity : AppCompatActivity() {
                     val trackGroup = trackGroups.get(idx)
                     for(j in 0 until trackGroup.length){
                         val trackMetaData = trackGroup.getFormat(j).metadata
-                        for(k in 0 until trackMetaData!!.length()){
-                            val artistMetadataEntry = trackMetaData!!.get(j)
-                            if(artistMetadataEntry is TextInformationFrame && artistMetadataEntry.id == "TPE1") {
-                                tvArtist.text = artistMetadataEntry.value
+                        for(k in 0 until trackMetaData!!.length()) {
+                            val artworkMetadataEntry = trackMetaData!!.get(k)
+                            if (artworkMetadataEntry is ApicFrame) {
+                                bitmapData = artworkMetadataEntry.pictureData
+                                Log.i("bitmap1: ", (bitmapData != null).toString())
                                 break
                             }
                         }
                         for(k in 0 until trackMetaData!!.length()){
-                            val songNameMetadataEntry = trackMetaData!!.get(j)
+                            val songNameMetadataEntry = trackMetaData!!.get(k)
                             if(songNameMetadataEntry is TextInformationFrame && songNameMetadataEntry.id == "TIT2") {
-                                tvSongName.text = songNameMetadataEntry.value
+                                mediaTitle = songNameMetadataEntry.value
+                                tvSongName.text = mediaTitle
                                 break
                             }
+                            else tvSongName.text = mediaTitleList[exoPlayer.currentWindowIndex]
+                        }
+                        for(k in 0 until trackMetaData!!.length()) {
+                            val artistMetadataEntry = trackMetaData!!.get(k)
+                            if (artistMetadataEntry is TextInformationFrame && artistMetadataEntry.id == "TPE1") {
+                                artistTitle = artistMetadataEntry.value
+                                tvArtist.text = artistTitle
+                                break
+                            } else tvArtist.text = mediaArtistList[exoPlayer.currentWindowIndex]
                         }
                     }
                 }
@@ -199,17 +223,18 @@ class PlayerActivity : AppCompatActivity() {
         mediaSession.isActive = true
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         val timelineQueueNavigator = object : TimelineQueueNavigator(mediaSession) {
+            @SuppressLint("ResourceType")
             override fun getMediaDescription(
                 player: Player,
                 windowIndex: Int
             ): MediaDescriptionCompat {
                 player.let { safePlayer ->
                     return MediaDescriptionCompat.Builder().apply {
-                        setTitle(mediaTitleList[windowIndex])
-                        setDescription(mediaArtistList[windowIndex])
+                        setTitle(mediaTitleList[exoPlayer.currentWindowIndex])
                     }.build()
                 }
             }
+
         }
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
         mediaSessionConnector.setPlayer(exoPlayer, null)

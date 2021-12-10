@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.annhienktuit.exoplayervideoplayerzalo">
+    package="com.annhienktuit.exoplayervideoplayerzalo" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".utils.CacheUtils"
         android:allowBackup="true"
-        android:largeHeap="true"
         android:animateLayoutChanges="true"
         android:icon="@drawable/ic_audio"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_audio"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ExoPlayerVideoPlayerZalo">
+        android:theme="@style/Theme.ExoPlayerVideoPlayerZalo" >
+        <service
+            android:name=".services.MusicService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false">
+        </service>
+
+        <activity
+            android:name=".activities.MediaStreamingActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.PlayerActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MediaSelectActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false" />
-        <activity android:name=".activities.SplashActivity">
+        <activity android:name=".activities.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
