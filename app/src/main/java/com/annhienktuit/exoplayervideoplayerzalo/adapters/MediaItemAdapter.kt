@@ -2,23 +2,17 @@ package com.annhienktuit.exoplayervideoplayerzalo.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.annhienktuit.exoplayervideoplayerzalo.activities.PlayerActivity
 import com.annhienktuit.exoplayervideoplayerzalo.R
+import com.annhienktuit.exoplayervideoplayerzalo.activities.MediaStreamingActivity
 import com.annhienktuit.exoplayervideoplayerzalo.models.Song
 import com.annhienktuit.exoplayervideoplayerzalo.utils.RetrieveAlbumArt
 import com.annhienktuit.exoplayervideoplayerzalo.utils.RetrieveAlbumArtParams
 import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import wseemann.media.FFmpegMediaMetadataRetriever
 
 class MediaItemAdapter(context: Context, songList: List<Song>) :
     RecyclerView.Adapter<MediaItemAdapter.ViewHolder>() {
@@ -65,7 +59,7 @@ class MediaItemAdapter(context: Context, songList: List<Song>) :
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
                 val currentMediaURL = mediaList[position].url
-                val intent = Intent(itemView.context, PlayerActivity::class.java)
+                val intent = Intent(itemView.context, MediaStreamingActivity::class.java)
                 intent.putExtra("url",currentMediaURL)
                 intent.putExtra("index",position)
                 intent.putExtra("listUrl",arrayURL)

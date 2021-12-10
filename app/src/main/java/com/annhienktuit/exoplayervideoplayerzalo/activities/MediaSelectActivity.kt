@@ -21,7 +21,6 @@ import com.facebook.shimmer.ShimmerFrameLayout
 class MediaSelectActivity : AppCompatActivity() {
     var requestURL = Constants.requestURL
     lateinit var queue:RequestQueue
-    lateinit var requestQueue:RequestQueue
     private lateinit var rcvMediaList: RecyclerView
     private lateinit var shimmerFrameLayout:ShimmerFrameLayout
     private var layoutManager: RecyclerView.LayoutManager? = null
