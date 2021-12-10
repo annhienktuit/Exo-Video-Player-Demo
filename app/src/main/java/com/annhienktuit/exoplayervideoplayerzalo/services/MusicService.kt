@@ -46,6 +46,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import android.os.SystemClock
 
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 
 
 class MusicService : Service() {
@@ -78,7 +79,6 @@ class MusicService : Service() {
         exoPlayer.setAudioAttributes(audioAttribute,false)
     }
 
-
     private fun getDatafromBundle(intent: Intent) {
         val extras: Bundle? = intent.extras
         if(extras !=  null){
@@ -99,6 +99,11 @@ class MusicService : Service() {
         val trackSelection = AdaptiveTrackSelection.Factory(DefaultBandwidthMeter())
         val trackSelector = DefaultTrackSelector(trackSelection)
         exoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     inner class MusicServiceBinder: Binder(){
@@ -152,20 +157,22 @@ class MusicService : Service() {
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
         mediaSessionConnector.setPlayer(exoPlayer, null)
         val playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, channelID, R.string.app_name, notificationID,DescriptionAdapter(this,mediaController)  )
+        playerNotificationManager.setNotificationListener(object:PlayerNotificationManager.NotificationListener{
+            override fun onNotificationStarted(notificationId: Int, notification: Notification?) {
+                ContextCompat.startForegroundService(applicationContext,Intent(applicationContext, this@MusicService.javaClass) )
+                startForeground(notificationId, notification)
+                Log.i("notification1: ","posted")
+            }
+
+            override fun onNotificationCancelled(notificationId: Int) {
+            }
+        })
+
         playerNotificationManager.apply {
             setMediaSessionToken(mediaSession.sessionToken)
             setPlayer(exoPlayer)
             setSmallIcon(R.drawable.ic_noti_logo)
         }
-        playerNotificationManager.setNotificationListener(object:PlayerNotificationManager.NotificationListener{
-            override fun onNotificationStarted(notificationId: Int, notification: Notification?) {
-                startForeground(notificationId, notification)
-            }
-
-            override fun onNotificationCancelled(notificationId: Int) {
-            }
-
-        })
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
