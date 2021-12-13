@@ -26,7 +26,7 @@ class SplashActivity : AppCompatActivity() {
         }
         imageViewLogo.alpha = 0f
         imageViewLogo.animate().setDuration(1500).alpha(1f).withEndAction {
-            val intent = Intent(this, MediaSelectActivity::class.java)
+            val intent = Intent(this, SpeedTestActivity::class.java)
             startActivity(intent)
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
             finish()

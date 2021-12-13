@@ -8,14 +8,14 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.BitmapCallback
 import com.google.android.exoplayer2.ui.PlayerNotificationManager.MediaDescriptionAdapter
 
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.annhienktuit.exoplayervideoplayerzalo.R
-import com.annhienktuit.exoplayervideoplayerzalo.utils.Extensions.getBitmapFromResource
-import com.annhienktuit.exoplayervideoplayerzalo.views.CircularImageView
+import android.content.Intent
+import com.annhienktuit.exoplayervideoplayerzalo.activities.MediaStreamingActivity
+import com.annhienktuit.exoplayervideoplayerzalo.services.MusicService
 
 
 class DescriptionAdapter(val context:Context, private val controller: MediaControllerCompat) : MediaDescriptionAdapter {
@@ -25,8 +25,9 @@ class DescriptionAdapter(val context:Context, private val controller: MediaContr
         return window.toString()
     }
 
-    override fun createCurrentContentIntent(player: Player): PendingIntent? =
-        controller.sessionActivity
+    override fun createCurrentContentIntent(player: Player): PendingIntent? {
+        return controller.sessionActivity
+    }
 
     override fun getCurrentContentText(player: Player): String? {
         return null
