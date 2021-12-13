@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.annhienktuit.exoplayervideoplayerzalo" >
+    package="com.annhienktuit.exoplayervideoplayerzalo">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,13 +20,16 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/ic_audio"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ExoPlayerVideoPlayerZalo" >
+        android:theme="@style/Theme.ExoPlayerVideoPlayerZalo">
+        <activity
+            android:name=".activities.SpeedTestActivity"
+            android:exported="false" />
+
         <service
             android:name=".services.MusicService"
             android:enabled="true"
             android:exported="true"
-            android:stopWithTask="false">
-        </service>
+            android:stopWithTask="false"></service>
 
         <activity
             android:name=".activities.MediaStreamingActivity"
@@ -39,7 +42,7 @@
             android:name=".activities.MediaSelectActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false" />
-        <activity android:name=".activities.SplashActivity" >
+        <activity android:name=".activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

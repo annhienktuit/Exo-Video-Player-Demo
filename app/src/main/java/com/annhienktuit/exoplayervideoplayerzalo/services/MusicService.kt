@@ -47,6 +47,11 @@ import android.os.SystemClock
 
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.annhienktuit.exoplayervideoplayerzalo.activities.MediaStreamingActivity
+import android.R.string.no
+
+
+
 
 
 class MusicService : Service() {
@@ -156,12 +161,14 @@ class MusicService : Service() {
         }
         mediaSessionConnector.setQueueNavigator(timelineQueueNavigator)
         mediaSessionConnector.setPlayer(exoPlayer, null)
-        val playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, channelID, R.string.app_name, notificationID,DescriptionAdapter(this,mediaController)  )
+        val notificationIntent = Intent(applicationContext, MediaStreamingActivity::class.java)
+        notificationIntent.flags = (Intent.FLAG_ACTIVITY_CLEAR_TOP
+                or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(this, channelID, R.string.app_name, notificationID,DescriptionAdapter(this,mediaController))
         playerNotificationManager.setNotificationListener(object:PlayerNotificationManager.NotificationListener{
             override fun onNotificationStarted(notificationId: Int, notification: Notification?) {
                 ContextCompat.startForegroundService(applicationContext,Intent(applicationContext, this@MusicService.javaClass) )
                 startForeground(notificationId, notification)
-                Log.i("notification1: ","posted")
             }
 
             override fun onNotificationCancelled(notificationId: Int) {
@@ -174,6 +181,7 @@ class MusicService : Service() {
             setSmallIcon(R.drawable.ic_noti_logo)
         }
     }
+
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         val restartServiceIntent = Intent(applicationContext, this.javaClass)
